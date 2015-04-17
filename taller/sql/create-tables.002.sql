@@ -14,12 +14,5 @@ CREATE TABLE reservas(
 	sid int,
 	bid int,
 	f_reserva timestamp,
-	f_alquiler timestamp,
-);
-
-CREATE TABLE reservas(
-	sid int,
-	bid int,
-	f_reserva timestamp,
-	f_alquiler timestamp,
+	f_alquiler timestamp
 );

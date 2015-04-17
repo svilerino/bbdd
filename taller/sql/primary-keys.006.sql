@@ -13,3 +13,6 @@ UPDATE botes SET bid = 5 WHERE bid = 3 AND color = "verde" limit 1;
 ALTER TABLE marinos ADD PRIMARY KEY(sid);
 ALTER TABLE botes ADD PRIMARY KEY(bid);
 ALTER TABLE reservas ADD PRIMARY KEY(f_alquiler);
+
+
+alquiler no funco. hay repetidos en f_alquiler.
