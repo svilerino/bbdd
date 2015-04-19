@@ -66,6 +66,7 @@ nose
 SELECT m.snombre, m.calificacion FROM marinos m WHERE m.calificacion = (SELECT MAX(m.calificacion) FROM marinos m);
 
 #6.7 Recuperar el nombre de los marineros que alquilaron todos los botes
+#Busca con el complemento, los marinos tales que no haya botes tales que no tengan una reserva de ese marino
 SELECT m.snombre FROM marinos m WHERE NOT EXISTS
 (SELECT b.bid FROM botes b WHERE NOT EXISTS
 	(SELECT * FROM reservas r WHERE r.sid = m.sid AND r.bid=b.bid));
@@ -73,3 +74,15 @@ SELECT m.snombre FROM marinos m WHERE NOT EXISTS
 probar con un count DISTINCT entre la cantidad de botes de todos los marinos y la cantidad total de botes
 
 #6.8 Recuperar el nombre del ( o los ) marineros que alquilaron mas botes.
+
+REVISAR!!
+
+OJO QUE ESTO CUENTA CANTIDAD DE RESERVAS, NO DE BOTES DISTINTOS. 
+IE MARINO 101 ALQUILO BOTE 1 DOS VECES, SE CUENTAN COMO SEPARADOS.
+
+#marineros que alquilaron mas botes
+
+SELECT marino_id, marino_nombre, MAX(cant_botes) FROM( 
+	SELECT m.sid as marino_id, m.snombre as marino_nombre, COUNT(*) as cant_botes 
+	FROM reservas r INNER JOIN marinos m ON m.sid=r.sid 
+	GROUP BY r.sid) as t
