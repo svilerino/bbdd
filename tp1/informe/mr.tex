@@ -20,39 +20,25 @@
 	\end{itemize}
 	\vspace{1mm}
 
-	\item \textbf{Consulta Popular} (\pk{idEleccion}, Descripcion) 
+	\item \textbf{Eleccion\_Consulta\_Popular} (\pk{\fk{idEleccion}}, Descripcion) 
 	\begin{itemize}
 		\item PK = CK = FK = \{idEleccion\}
 	\end{itemize}
 	\vspace{1mm}
 
-	\item \textbf{Cargo Federal} (\pk{idEleccion}) 
+	%No hace falta porque no tiene atributos ni relaciones propias, queda determinada por el campo tipo en eleccion.
+	%\item \textbf{Eleccion\_Cargo\_Federal} (\pk{idEleccion}) 
+	%\begin{itemize}
+	%	\item PK = CK = FK = \{idEleccion\}
+	%\end{itemize}
+	%\vspace{1mm}
+
+	\item \textbf{Provincia} (\pk{idProvincia}, Nombre) 
 	\begin{itemize}
-		\item PK = CK = FK = \{idEleccion\}
+		\item PK = CK = \{idProvincia\}
 	\end{itemize}
 	\vspace{1mm}
 
-	\item \textbf{Cargo Municipal} (\pk{idCargo}, \fk{idMunicipio}) 
-	\begin{itemize}
-		\item PK = CK = \{idCargo\}
-		\item FK = \{idMunicipio\}
-	\end{itemize}
-	\vspace{1mm}
-
-	\item \textbf{Cargo Provincial} (\pk{idCargo}, \fk{idProvincia}) 
-	\begin{itemize}
-		\item PK = CK = \{idCargo\}
-		\item FK = \{idProvincia\}
-	\end{itemize}
-	\vspace{1mm}
-
-	\item \textbf{Cargo Legislativo} (\pk{idCargo}, \fk{idProvincia}) 
-	\begin{itemize}
-		\item PK = CK = \{idCargo\}
-		\item FK = \{idProvincia\}
-	\end{itemize}
-	\vspace{1mm}
-	 
 	\item \textbf{Municipio} (\pk{idMunicipio}, Nombre, \fk{idProvincia}) 
 	\begin{itemize}
 		\item PK = CK = \{idMunicipio\}
@@ -60,11 +46,28 @@
 	\end{itemize}
 	\vspace{1mm}
 
-	\item \textbf{Provincia} (\pk{idProvincia}, Nombre) 
+
+	\item \textbf{Eleccion\_Cargo\_Municipal} ((\fk{\pk{idEleccion}}, \fk{idMunicipio}) 
 	\begin{itemize}
-		\item PK = CK = \{idProvincia\}
+		\item PK = CK = \{idEleccion\}
+		\item FK = \{idEleccion, idMunicipio\}
 	\end{itemize}
 	\vspace{1mm}
+
+	\item \textbf{Eleccion\_Cargo\_Provincial} ((\fk{\pk{idEleccion}}, \fk{idProvincia}) 
+	\begin{itemize}
+		\item PK = CK = \{idEleccion\}
+		\item FK = \{idEleccion, idProvincia\}
+	\end{itemize}
+	\vspace{1mm}
+
+	\item \textbf{Eleccion\_Cargo\_Legislativo} ((\fk{\pk{idEleccion}}, \fk{idProvincia}) 
+	\begin{itemize}
+		\item PK = CK = \{idEleccion\}
+		\item FK = \{idEleccion, idProvincia\}
+	\end{itemize}
+	\vspace{1mm}
+	 
 
 	\item \textbf{Voto} (\pk{idVoto}, \fk{idMesa}, Tipo) 
 	\begin{itemize}
@@ -73,34 +76,27 @@
 	\end{itemize}
 	\vspace{1mm}
 
-	\item \textbf{A Candidato} (\pk{idVoto}, \fk{DNI}) 
+	\item \textbf{Voto\_A\_Candidato} (\pk{idVoto}, \fk{DNI}) 
 	\begin{itemize}
 		\item PK = CK = \{idVoto\}
-		\item FK = \{idVoto, DNI\}
+		\item FK = \{idVoto, DNI (references Candidato on DNI)\}
 	\end{itemize}
 	\vspace{1mm}
 
-	\item \textbf{A Plesbiscito} (\pk{idVoto}, Tipo) 
-	\begin{itemize}
-		\item PK = CK = \{idVoto\}
-		\item FK = \{idVoto\}
-	\end{itemize}
-	\vspace{1mm}
-
-	\item \textbf{Si} (\pk{idVoto}) 
-	\begin{itemize}
-		\item PK = CK = \{idVoto\}
-		\item FK = \{idVoto (references A Plesbicito on idVoto)\}
-	\end{itemize}
-	\vspace{1mm}
-
-	\item \textbf{No} (\pk{idVoto}) 
-	\begin{itemize}
-		\item PK = CK = \{idVoto\}
-		\item FK = \{idVoto (references A Plesbicito on idVoto)\}
-	\end{itemize}
-	\vspace{1mm}
-
+%	No hace falta, queda determinado por el campo tipo de voto ya que no tienen relaciones ni atributos particulares. 
+%	\item \textbf{Voto\_A\_Plesbiscito\_A\_Favor} (\pk{idVoto}) 
+%	\begin{itemize}
+%		\item PK = CK = \{idVoto\}
+%		\item FK = \{idVoto\}
+%	\end{itemize}
+%	\vspace{1mm}
+%
+%	\item \textbf{Voto\_A\_Plesbiscito\_En\_Contra} (\pk{idVoto}) 
+%	\begin{itemize}
+%		\item PK = CK = \{idVoto\}
+%		\item FK = \{idVoto\}
+%	\end{itemize}
+%	\vspace{1mm}
 
 	\item \textbf{Ciudadano} (\pk{DNI}, Nombre, Apellido, \fk{idMesa}, \nullableAtribute{selloVoto}) 
 	\begin{itemize}
@@ -111,21 +107,22 @@
 	\vspace{1mm}
 
 
-	\item \textbf{Fiscal Partidario} (\pk{DNI}, \fk{idPartido}) 
+	\item \textbf{Fiscal\_Partidario} (\pk{DNI}, \fk{idPartido}) 
 	\begin{itemize}
 		\item PK = CK = \{DNI\}
 		\item FK = \{idPartido\}
 	\end{itemize}
 	\vspace{1mm}
 
-	\item \textbf{Candidato} (\pk{DNI}) 
+	\item \textbf{Candidato} (\pk{\fk{DNI}}) 
 	\begin{itemize}
 		\item PK = CK = \{DNI\}
+		\item FK = \{DNI references Ciudadano on DNI\}
 	\end{itemize}
 	\vspace{1mm}
 
 
-	\item \textbf{Partido Politico} (\pk{idPartido}, Nombre) 
+	\item \textbf{Partido\_Politico} (\pk{idPartido}, Nombre) 
 	\begin{itemize}
 		\item PK = CK = \{idPartido\}
 	\end{itemize}
@@ -140,7 +137,7 @@
 
 	\item \textbf{Centro} (\pk{idCentro}, Nombre\_Establecimiento, Direccion) 
 	\begin{itemize}
-		\item PK = CK = \{Patente\}
+		\item PK = CK = \{idCentro\}
 	\end{itemize}
 	\vspace{1mm}
 
@@ -153,8 +150,8 @@
 
 	\item \textbf{Mesa} (\pk{idMesa}, nroMesa, \fk{idPresidente}, \fk{idVicepresidente}, \fk{idEleccion}, \fk{idCentro}) 
 	\begin{itemize}
-		\item PK = CK = \{idMaquina\}
-		\item FK = \{idMesa, idPresidente (references Ciudadano on DNI), idVicepresidente (references Ciudadano on DNI), idEleccion, idCentro\}
+		\item PK = CK = \{idMesa\}
+		\item FK = \{idPresidente (references Ciudadano on DNI), idVicepresidente (references Ciudadano on DNI), idEleccion, idCentro\}
 	\end{itemize}
 	\vspace{1mm}
 
@@ -185,7 +182,7 @@
 	\begin{itemize}
 		\item CK = \{(idEleccion, DNI), (idEleccion, idPartido)\}
 		\item PK = CK = \{(idEleccion, DNI)\}
-		\item FK = \{idEleccion, idPartido, DNI  (references Candidato on DNI)\}
+		\item FK = \{idEleccion, idPartido, DNI (references Candidato on DNI)\}
 	\end{itemize}
 	\vspace{1mm}
 
@@ -195,4 +192,17 @@
 \begin{itemize}
 	\item Todos los atributos en negro son no nullables.
 	\item Todas las relaciones son de participacion total salvo que se explicite lo contrario.
+	\item En la doble especializacion de voto por la rama de consulta popular, consideramos innecesario crear la tabla A\_Plesbicito con el campo tipo que indica si el voto es por Si o por No, pues es mas sencillo directamente especializar en el nivel superior, que un voto puede ser de 3 tipos:
+	\begin{itemize}
+		\item A Candidato
+		\item A Consulta Popular, A favor
+		\item A Consulta Popular, En contra
+	\end{itemize}
+
+
 \end{itemize}
+
+
+Habria que agregar como restriccion al der que un ciudadano no pueda ser tecnico, conductor, fiscal, etc en una misma eleccion.
+
+las pks no son autoincrement por motivos de testing.
