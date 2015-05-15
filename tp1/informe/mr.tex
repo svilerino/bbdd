@@ -1,0 +1,198 @@
+\subsection{Modelo Relacional}
+
+\textbf{Notacion:}
+\begin{itemize}
+	\item \pk{Primary Key} 
+	\item \fk{Not Nullable Foreign Key}
+	\item \nullableFk{Nullable Foreign Key}
+	\item Not Nullable Atribute
+	\item \nullableAtribute{Nullable Atribute}
+\end{itemize}
+
+\vspace{2mm}
+\textbf{Entidades:}
+\vspace{1mm}
+
+\begin{itemize}
+	\item \textbf{Eleccion} (\pk{idEleccion}, Fecha, Tipo) 
+	\begin{itemize}
+		\item PK = CK = \{idEleccion\}
+	\end{itemize}
+	\vspace{1mm}
+
+	\item \textbf{Consulta Popular} (\pk{idEleccion}, Descripcion) 
+	\begin{itemize}
+		\item PK = CK = FK = \{idEleccion\}
+	\end{itemize}
+	\vspace{1mm}
+
+	\item \textbf{Cargo Federal} (\pk{idEleccion}) 
+	\begin{itemize}
+		\item PK = CK = FK = \{idEleccion\}
+	\end{itemize}
+	\vspace{1mm}
+
+	\item \textbf{Cargo Municipal} (\pk{idCargo}, \fk{idMunicipio}) 
+	\begin{itemize}
+		\item PK = CK = \{idCargo\}
+		\item FK = \{idMunicipio\}
+	\end{itemize}
+	\vspace{1mm}
+
+	\item \textbf{Cargo Provincial} (\pk{idCargo}, \fk{idProvincia}) 
+	\begin{itemize}
+		\item PK = CK = \{idCargo\}
+		\item FK = \{idProvincia\}
+	\end{itemize}
+	\vspace{1mm}
+
+	\item \textbf{Cargo Legislativo} (\pk{idCargo}, \fk{idProvincia}) 
+	\begin{itemize}
+		\item PK = CK = \{idCargo\}
+		\item FK = \{idProvincia\}
+	\end{itemize}
+	\vspace{1mm}
+	 
+	\item \textbf{Municipio} (\pk{idMunicipio}, Nombre, \fk{idProvincia}) 
+	\begin{itemize}
+		\item PK = CK = \{idMunicipio\}
+		\item FK = \{idProvincia\}
+	\end{itemize}
+	\vspace{1mm}
+
+	\item \textbf{Provincia} (\pk{idProvincia}, Nombre) 
+	\begin{itemize}
+		\item PK = CK = \{idProvincia\}
+	\end{itemize}
+	\vspace{1mm}
+
+	\item \textbf{Voto} (\pk{idVoto}, \fk{idMesa}, Tipo) 
+	\begin{itemize}
+		\item PK = CK = \{idVoto\}
+		\item FK = \{idMesa\}
+	\end{itemize}
+	\vspace{1mm}
+
+	\item \textbf{A Candidato} (\pk{idVoto}, \fk{DNI}) 
+	\begin{itemize}
+		\item PK = CK = \{idVoto\}
+		\item FK = \{idVoto, DNI\}
+	\end{itemize}
+	\vspace{1mm}
+
+	\item \textbf{A Plesbiscito} (\pk{idVoto}, Tipo) 
+	\begin{itemize}
+		\item PK = CK = \{idVoto\}
+		\item FK = \{idVoto\}
+	\end{itemize}
+	\vspace{1mm}
+
+	\item \textbf{Si} (\pk{idVoto}) 
+	\begin{itemize}
+		\item PK = CK = \{idVoto\}
+		\item FK = \{idVoto (references A Plesbicito on idVoto)\}
+	\end{itemize}
+	\vspace{1mm}
+
+	\item \textbf{No} (\pk{idVoto}) 
+	\begin{itemize}
+		\item PK = CK = \{idVoto\}
+		\item FK = \{idVoto (references A Plesbicito on idVoto)\}
+	\end{itemize}
+	\vspace{1mm}
+
+
+	\item \textbf{Ciudadano} (\pk{DNI}, Nombre, Apellido, \fk{idMesa}, \nullableAtribute{selloVoto}) 
+	\begin{itemize}
+		\item PK = CK = \{DNI\}
+		\item FK = \{idMesa\}
+		\item \textbf{Nota:} selloVoto es de tipo fecha/hora, puede ser nulo y por defecto comienza siendo nulo.
+	\end{itemize}
+	\vspace{1mm}
+
+
+	\item \textbf{Fiscal Partidario} (\pk{DNI}, \fk{idPartido}) 
+	\begin{itemize}
+		\item PK = CK = \{DNI\}
+		\item FK = \{idPartido\}
+	\end{itemize}
+	\vspace{1mm}
+
+	\item \textbf{Candidato} (\pk{DNI}) 
+	\begin{itemize}
+		\item PK = CK = \{DNI\}
+	\end{itemize}
+	\vspace{1mm}
+
+
+	\item \textbf{Partido Politico} (\pk{idPartido}, Nombre) 
+	\begin{itemize}
+		\item PK = CK = \{idPartido\}
+	\end{itemize}
+	\vspace{1mm}
+
+	\item \textbf{Camion} (\pk{Patente}, \fk{idConductor}) 
+	\begin{itemize}
+		\item PK = CK = \{Patente\}
+		\item FK = \{idConductor (references Ciudadano on DNI)\}
+	\end{itemize}
+	\vspace{1mm}
+
+	\item \textbf{Centro} (\pk{idCentro}, Nombre\_Establecimiento, Direccion) 
+	\begin{itemize}
+		\item PK = CK = \{Patente\}
+	\end{itemize}
+	\vspace{1mm}
+
+	\item \textbf{Maquina} (\pk{idMaquina}, \fk{idMesa}, \fk{idTecnico}) 
+	\begin{itemize}
+		\item PK = CK = \{idMaquina\}
+		\item FK = \{idMesa, idTecnico (references Ciudadano on DNI)\}
+	\end{itemize}
+	\vspace{1mm}
+
+	\item \textbf{Mesa} (\pk{idMesa}, nroMesa, \fk{idPresidente}, \fk{idVicepresidente}, \fk{idEleccion}, \fk{idCentro}) 
+	\begin{itemize}
+		\item PK = CK = \{idMaquina\}
+		\item FK = \{idMesa, idPresidente (references Ciudadano on DNI), idVicepresidente (references Ciudadano on DNI), idEleccion, idCentro\}
+	\end{itemize}
+	\vspace{1mm}
+
+\end{itemize}
+		
+\vspace{2mm}
+\textbf{Relaciones:}
+\vspace{1mm}
+
+\begin{itemize}
+	
+	\item \textbf{Camion\_Centro} (\pk{\fk{patente}, \fk{idCentro}}) 
+	\begin{itemize}
+		\item PK = CK = \{(patente, idCentro)\}
+		\item FK = \{patente, idCentro\}
+	\end{itemize}
+	\vspace{1mm}
+
+	\item \textbf{Fiscales} (\pk{\fk{DNI}, \fk{idMesa}}) 
+	\begin{itemize}
+		\item PK = CK = \{(DNI, idMesa)\}
+		\item FK = \{idMesa, DNI  (references Ciudadano on DNI)\}
+		\item \textbf{Nota:} Puede haber mesas sin fiscal. Mesa participa parcialmente en esta relacion.
+	\end{itemize}
+	\vspace{1mm}
+
+	\item \textbf{Postulaciones} (\pk{\fk{idEleccion}, \fk{DNI}}, \fk{idPartido}) 
+	\begin{itemize}
+		\item CK = \{(idEleccion, DNI), (idEleccion, idPartido)\}
+		\item PK = CK = \{(idEleccion, DNI)\}
+		\item FK = \{idEleccion, idPartido, DNI  (references Candidato on DNI)\}
+	\end{itemize}
+	\vspace{1mm}
+
+\end{itemize}
+
+\textbf{Notas:} 
+\begin{itemize}
+	\item Todos los atributos en negro son no nullables.
+	\item Todas las relaciones son de participacion total salvo que se explicite lo contrario.
+\end{itemize}

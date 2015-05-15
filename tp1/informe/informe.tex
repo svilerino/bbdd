@@ -60,6 +60,7 @@
 \usepackage[usenames,dvipsnames]{color}
 \usepackage{hyperref}
 \usepackage{listings}
+\usepackage{ulem}
 \usepackage{color}
 \usepackage[table]{xcolor}
 \usepackage{amsmath}
@@ -91,6 +92,14 @@
 
 \lstset{escapechar=@,style=customc}
 
+
+\newcommand{\pk}[1]{\textbf{\textcolor{PineGreen}{\underline{{#1}}}}}
+
+\newcommand{\fk}[1]{\textbf{\textcolor{red}{\dashuline{{#1}}}}}
+\newcommand{\nullableFk}[1]{\textbf{\textcolor{YellowOrange}{\dashuline{{#1}}}}}
+
+\newcommand{\nullableAtribute}[1]{\textbf{\textcolor{MidnightBlue}{{#1}}}}
+
 \begin{document}
 
 \titulo{Trabajo Práctico 1}
@@ -112,7 +121,10 @@
 \newpage
 
 \section{Introducción}
+
 \section{Desarrollo}
+\input{der}
+\input{mr}
 \section{Conclusiones}
 
 \end{document}
