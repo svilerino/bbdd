@@ -26,13 +26,6 @@
 	\end{itemize}
 	\vspace{1mm}
 
-	%No hace falta porque no tiene atributos ni relaciones propias, queda determinada por el campo tipo en eleccion.
-	%\item \textbf{Eleccion\_Cargo\_Federal} (\pk{idEleccion}) 
-	%\begin{itemize}
-	%	\item PK = CK = FK = \{idEleccion\}
-	%\end{itemize}
-	%\vspace{1mm}
-
 	\item \textbf{Provincia} (\pk{idProvincia}, Nombre) 
 	\begin{itemize}
 		\item PK = CK = \{idProvincia\}
@@ -82,21 +75,6 @@
 		\item FK = \{idVoto, DNI (references Candidato on DNI)\}
 	\end{itemize}
 	\vspace{1mm}
-
-%	No hace falta, queda determinado por el campo tipo de voto ya que no tienen relaciones ni atributos particulares. 
-%	\item \textbf{Voto\_A\_Plesbiscito\_A\_Favor} (\pk{idVoto}) 
-%	\begin{itemize}
-%		\item PK = CK = \{idVoto\}
-%		\item FK = \{idVoto\}
-%	\end{itemize}
-%	\vspace{1mm}
-%
-%	\item \textbf{Voto\_A\_Plesbiscito\_En\_Contra} (\pk{idVoto}) 
-%	\begin{itemize}
-%		\item PK = CK = \{idVoto\}
-%		\item FK = \{idVoto\}
-%	\end{itemize}
-%	\vspace{1mm}
 
 	\item \textbf{Ciudadano} (\pk{DNI}, Nombre, Apellido, \fk{idMesa}, \nullableAtribute{selloVoto}) 
 	\begin{itemize}
@@ -191,6 +169,7 @@
 \textbf{Notas:} 
 \begin{itemize}
 	\item Todos los atributos en negro son no nullables.
+	\item Las \pk{Primary Keys} del modelo fisico, no son autoincrement(identity) por motivos de testing.
 	\item Todas las relaciones son de participacion total salvo que se explicite lo contrario.
 	\item En la doble especializacion de voto por la rama de consulta popular, consideramos innecesario crear la tabla A\_Plesbicito con el campo tipo que indica si el voto es por Si o por No, pues es mas sencillo directamente especializar en el nivel superior, que un voto puede ser de 3 tipos:
 	\begin{itemize}
@@ -203,6 +182,4 @@
 \end{itemize}
 
 
-Habria que agregar como restriccion al der que un ciudadano no pueda ser tecnico, conductor, fiscal, etc en una misma eleccion.
 
-las pks no son autoincrement por motivos de testing.
