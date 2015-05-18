@@ -5,11 +5,10 @@
 \begin{enumerate}
 	\item  Para cada persona que vota se debe insertar un voto(sin informacion de la persona) y actualizar correctamente la fecha y hora en la que voto y poniendo el “sello” virtual en el padron asignando un valor no nulo a cuandoVoto.
 	\item  La suma de los votos de todas las mesas de todos los candidatos debe ser menor o igual(votos en blanco diferencia) a la cantidad de ciudadanos que tiene el timestamp cuandoVoto? No nulo en el padron de dicha eleccion. (notar que esto tambien lo acota por la cantidad de ciudadanos)
-	\item  Todos los candidatos que se postulan para una eleccion, deben postularse para el mismo cargo.
-	\item  Asumimos que cada partido politico presenta un solo candidato.
-	\item  Los votos para una eleccion son: o bien consulta popular o bien de tipo candidato según corresponda el tipo de eleccion
+	\item  Ccada partido politico presenta un solo candidato.
+	\item  Todos los votos para una eleccion son: o bien consulta popular o bien de tipo candidato según corresponda el tipo de eleccion
 	\item Si la eleccion es una consulta popular, los votos deben ser si/no. Sino, deben ser candidatos
-	\item Un voto a candidato tiene que ser a un candidato que este postulado
+	\item Un voto a candidato tiene que ser a un candidato que este postulado en esa eleccion.
 	\item Un ciudadano es fiscal, presidente o vicepresidente de una sola mesa por eleccion.
 	\item Un ciudadano vota en una sola mesa por eleccion.
 	\item Un ciudadano no pueda ser tecnico, conductor, fiscal, etc en una misma eleccion.
