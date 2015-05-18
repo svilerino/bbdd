@@ -76,11 +76,9 @@
 	\end{itemize}
 	\vspace{1mm}
 
-	\item \textbf{Ciudadano} (\pk{DNI}, Nombre, Apellido, \fk{idMesa}, \nullableAtribute{selloVoto}) 
+	\item \textbf{Ciudadano} (\pk{DNI}, Nombre, Apellido)
 	\begin{itemize}
 		\item PK = CK = \{DNI\}
-		\item FK = \{idMesa\}
-		\item \textbf{Nota:} selloVoto es de tipo fecha/hora, puede ser nulo y por defecto comienza siendo nulo.
 	\end{itemize}
 	\vspace{1mm}
 
@@ -161,6 +159,13 @@
 		\item CK = \{(idEleccion, DNI), (idEleccion, idPartido)\}
 		\item PK = CK = \{(idEleccion, DNI)\}
 		\item FK = \{idEleccion, idPartido, DNI (references Candidato on DNI)\}
+	\end{itemize}
+	\vspace{1mm}
+	
+	\item \textbf{Padron} (\pk{\fk{idMesa}, \fk{DNI}}, cuandoVoto?) 
+	\begin{itemize}
+		\item PK = CK = \{(idMesa, DNI)\}
+		\item FK = \{idMesa, DNI (references Ciudadano on DNI)\}
 	\end{itemize}
 	\vspace{1mm}
 
