@@ -123,7 +123,6 @@
 		\item FK = \{idTecnico (references Ciudadano on DNI)\}
 	\end{itemize}
 	\vspace{1mm}
-Maquina esta pending, si es 1 a N hay que ponerle el id de la mesa
 	\item \textbf{Mesa} (\pk{idMesa}, nroMesa, \fk{idPresidente}, \fk{idVicepresidente}, \fk{idEleccion}, \fk{idCentro}, \fk{idMaquina}) 
 	\begin{itemize}
 		\item PK = CK = \{idMesa\}
@@ -162,10 +161,11 @@ Maquina esta pending, si es 1 a N hay que ponerle el id de la mesa
 	\end{itemize}
 	\vspace{1mm}
 	
-	\item \textbf{Padron} (\pk{\fk{idMesa}, \fk{DNI}}, cuandoVoto?) 
+	\item \textbf{Padron} (\pk{\fk{idMesa}, \fk{DNI}}, \nullableAtribute{selloVoto}) 
 	\begin{itemize}
 		\item PK = CK = \{(idMesa, DNI)\}
 		\item FK = \{idMesa, DNI (references Ciudadano on DNI)\}
+		\item \textbf{Nota:} el atributo selloVoto es NULL por defecto.
 	\end{itemize}
 	\vspace{1mm}
 
