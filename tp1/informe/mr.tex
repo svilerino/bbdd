@@ -117,17 +117,17 @@
 	\end{itemize}
 	\vspace{1mm}
 
-	\item \textbf{Maquina} (\pk{idMaquina}, \fk{idMesa}, \fk{idTecnico}) 
+	\item \textbf{Maquina} (\pk{idMaquina}, \fk{idTecnico}) 
 	\begin{itemize}
 		\item PK = CK = \{idMaquina\}
-		\item FK = \{idMesa, idTecnico (references Ciudadano on DNI)\}
+		\item FK = \{idTecnico (references Ciudadano on DNI)\}
 	\end{itemize}
 	\vspace{1mm}
 Maquina esta pending, si es 1 a N hay que ponerle el id de la mesa
-	\item \textbf{Mesa} (\pk{idMesa}, nroMesa, \fk{idPresidente}, \fk{idVicepresidente}, \fk{idEleccion}, \fk{idCentro}) 
+	\item \textbf{Mesa} (\pk{idMesa}, nroMesa, \fk{idPresidente}, \fk{idVicepresidente}, \fk{idEleccion}, \fk{idCentro}, \fk{idMaquina}) 
 	\begin{itemize}
 		\item PK = CK = \{idMesa\}
-		\item FK = \{idPresidente (references Ciudadano on DNI), idVicepresidente (references Ciudadano on DNI), idEleccion, idCentro\}
+		\item FK = \{idPresidente (references Ciudadano on DNI), idVicepresidente (references Ciudadano on DNI), idEleccion, idCentro, idMaquina\}
 	\end{itemize}
 	\vspace{1mm}
 
