@@ -26,21 +26,41 @@ Modelaremos las restricciones al modelo utilizando funcionalidades provistas por
 			\item Un voto a candidato tiene que ser a un candidato que este postulado en esa eleccion.
 		\end{itemize}
 
-	\item Before insert trigger sobre tabla voto. navegamos a mesa y de mesa a eleccion y chequeamos que el campo tipo de la eleccion corresponda con el campo tipo del voto.
+	\item Insert trigger sobre tabla voto. navegamos a mesa y de mesa a eleccion y chequeamos que el campo tipo de la eleccion corresponda con el campo tipo del voto.
 		\begin{itemize}
 			\item Todos los votos para una eleccion son: o bien consulta popular o bien de tipo candidato según corresponda el tipo de eleccion
 			\item Si la eleccion es una consulta popular, los votos deben ser si/no. Sino, deben ser candidatos
 		\end{itemize}
 		\begin{lstlisting}
-			CREATE TRIGGER trg_check_selloVotoEsNull on Voto INSTEAD OF INSERT AS 
+			CREATE TRIGGER [dbo].[trg\_check\_votoTipoEleccion] on [dbo].[Voto] AFTER INSERT AS 
 			BEGIN
-				SET NOCOUNT ON
-					INSERT INTO Voto(
-						SELECT * FROM INSERTED
-						WHERE 
-						)
-					blablabla, TODO
-			END
+				SET NOCOUNT ON;
+				-- Consigo el tipo de la eleccion de la mesa en la que se va a efectuar el voto
+					DECLARE @tipoEleccion Varchar(250)--mismo varchar que tipo de eleccion.
+					SELECT @tipoEleccion = e.tipo FROM inserted i INNER JOIN Mesa m ON m.idMesa = i.idMesa  INNER JOIN Eleccion e ON m.idEleccion = e.idEleccion
+					
+				-- Consigo tipo de voto a insertar
+					DECLARE @tipoVoto Varchar(250)
+					SELECT @tipoVoto = i.tipo FROM inserted i
+					
+					-- Asumo que el campo tipo esta correctamente validado en las tablas involucradas, por lo cual la eleccion puede ser a Consulta Popular o a cargos varios.
+					
+					IF(@tipoEleccion = 'Consulta Popular') BEGIN-- Eleccion es a consulta popular
+						IF(@tipoVoto <> 'APlesbicitoSi' AND @tipoVoto <> 'APlesbicitoNo') BEGIN
+							RAISERROR('La eleccion es para Consulta Popular pero el voto no es a plesbicito.', 0, 0)
+							ROLLBACK TRANSACTION;
+							RETURN;
+						END
+					END
+					
+					IF(@tipoEleccion <> 'Consulta Popular') BEGIN-- Eleccion es a cargo
+						IF(@tipoVoto <> 'ACandidato') BEGIN
+							RAISERROR('La eleccion es para Cargo pero el voto no es a candidato.', 0, 0)
+							ROLLBACK TRANSACTION;
+							RETURN;
+						END
+					END
+			END;
 		\end{lstlisting}
 	
 	\item{Queda implicada por el stored procedure de voto, que chequea sello null y marca no null el sello luego. No hay forma que de se inserten mas votos que personas}. \fk{Alguien piense esto a ver si no estoy flasheando plz.}
@@ -53,7 +73,7 @@ Modelaremos las restricciones al modelo utilizando funcionalidades provistas por
 			\item No hay candidatos repetidos en una eleccion.
 		\end{itemize}
 
-	\item Before insert trigger en postulaciones que no permita hacer insert si ya existe un candidato para dicho partido politico en dicha eleccion.
+	\item Insert trigger en postulaciones que no permita hacer insert si ya existe un candidato para dicho partido politico en dicha eleccion.
 		\begin{itemize}
 			\item Cada partido politico presenta un solo candidato.
 		\end{itemize}
@@ -69,19 +89,19 @@ Modelaremos las restricciones al modelo utilizando funcionalidades provistas por
 			END
 		\end{lstlisting}
 	
-	\item Before insert trigger en Mesa que verifique que en esa eleccion, no haya otras mesas donde este ciudadano sea tecnico, presidente, vicepresidente, fiscal o conductor
-	\item Before insert trigger en Conductor que verifique que en esa eleccion, no haya  mesas donde este ciudadano sea tecnico, presidente, vicepresidente o fiscal.
+	\item Insert trigger en Mesa que verifique que en esa eleccion, no haya otras mesas donde este ciudadano sea tecnico, presidente, vicepresidente, fiscal o conductor. \textbf{Esto debe incluir que en la mesa a insertar este el mismo DNI en varias FK.}
+	\item Insert trigger en Conductor que verifique que en esa eleccion, no haya  mesas donde este ciudadano sea tecnico, presidente, vicepresidente o fiscal.
 		\begin{itemize}
 			\item Un ciudadano no pueda ser tecnico, presidente, vicepresidente o fiscal en una misma eleccion.
 			\item Un ciudadano no puede ser conductor y tecnico, presidente, vicepresidente o fiscal en una misma eleccion.
 		\end{itemize}	
 
-	\item Before insert trigger en Padron que verifique que para ese DNI, no exista otra mesa, de la misma eleccion, que ya lo tenga asociado.
+	\item Insert trigger en Padron que verifique que para ese DNI, no exista otra mesa, de la misma eleccion, que ya lo tenga asociado.
 		\begin{itemize}
 			\item Un ciudadano vota en una sola mesa por eleccion.
 		\end{itemize}
 
-	\item Before insert en Mesa para ver que la maquina asignada no este asignada a otra mesa en esa eleccion.
+	\item Insert en Mesa para ver que la maquina asignada no este asignada a otra mesa en esa eleccion.
 		\begin{itemize}
 			\item Una maquina funciona en una sola mesa por eleccion.
 		\end{itemize}
@@ -90,8 +110,13 @@ Modelaremos las restricciones al modelo utilizando funcionalidades provistas por
 
 
 
-
+\fk{Hay que hacer triggers para validar los campos tipo de las tablas que tengan herencia. O ver si hay alguna forma de especificar tipos enumerados en SQLSERVER2008}
 
 \fk{OJO QUE VAMOS A USAR TRANSACCION EN UN STORED PROCEDURE.}
 ojo con los insert triggers y los updates, habria que prohibir los updates o hacer triggers en insert y update?
 no se deberian permitir deletes ni updates sobre voto(y posiblemente otras tablas). ??
+
+
+--Utiles para testear triggers rapido
+--ALTER TABLE Voto NOCHECK CONSTRAINT ALL
+--ALTER TABLE Voto CHECK CONSTRAINT ALL
