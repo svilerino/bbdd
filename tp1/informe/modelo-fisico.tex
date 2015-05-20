@@ -99,12 +99,12 @@ Modelaremos las restricciones al modelo utilizando funcionalidades provistas por
 \end{itemize}
 \vspace{1.2cm}
 \begin{itemize}
-%------------------------- Pending -------------------------
+%------------------------- Falta codearlos bien -------------------------
 		\item[$\bigstar$] Toda persona que vota en una mesa, debe tener nulo el campo selloVoto del padron para dicha mesa. ie. No permitir que la gente vote mas de una vez por eleccion.
 		\item[$\bigstar$] Para todo voto que se inserta se debe actualizar correctamente la fecha y hora en la que voto y poniendo el “sello” virtual en el padron asignando un valor no nulo a cuandoVoto.
 		\item[$\bigstar$] Para todo voto que se inserta se debe actualizar correctamente la tabla hija de ser necesario. ie Voto y Voto A Candidato.
 		\begin{itemize}
-			\item[\Checkmark] Con respecto a las restricciones referidas al voto y el sello en el padron, no podemos modelarlas con before y after triggers dado que no tenemos forma de navegar desde la tabla voto hacia el padron(no se guarda info de la persona en la tabla voto.). Con lo cual crearemos un stored procedure, que realizará la operacion de voto como una transacción, verificando que el sello sea NULO antes de insertar el voto y que el sello contenga el datetime una vez insertado el voto. 
+			\item[\Checkmark] Con respecto a las restricciones referidas al voto y el sello en el padron, no podemos modelarlas con before y after triggers dado que no tenemos forma de navegar desde la tabla voto hacia el padron(no se guarda info de la persona en la tabla voto.). Con lo cual crearemos un stored procedure, que realizará la operacion de voto como una transacción, verificando que el sello sea NULO antes de insertar el voto y que el sello contenga el datetime una vez insertado el voto. Ademas de realizar la consistencia de insercion del voto si es a candidato en varias tablas. Las validaciones adicionales al voto mencionadas anteriormente, estan contempladas dentro de este procedimiento pues las tablas involucradas ya contienen los triggers necesarios.
 		\end{itemize}
 \end{itemize}
 \vspace{1.2cm}
@@ -112,11 +112,19 @@ Modelaremos las restricciones al modelo utilizando funcionalidades provistas por
 %------------------------- Pending -------------------------
 	\item[$\bigstar$] Inserciones consistentes en tablas con jerarquia: ie. Entidades: Ciudadano, Eleccion, Voto y sus hijos. 
 	\begin{itemize}
-		\item[\Checkmark] Dado que la PK de la tabla hijo es FK de la PK de la tabla padre, la insercion en tablas hijos fallara si no existe el registro correspondiente en la tabla padre. Analogamente, debemos proveer mecanismos para poder realizar inserciones consistentes de entidades padres que requieran insercion en tablas hijas. ie Voto de tipo \texttt{A Candidato} requiere la insercion de un registro en la tabla \texttt{Votos A Candidato} relacionando el candidato en cuestion. Para esto proveeremos \textbf{stores procedures} para realizar dichas operaciones. 
+		\item[\Checkmark] Dado que la PK de la tabla hijo es FK de la PK de la tabla padre, la insercion en tablas hijos fallara si no existe el registro correspondiente en la tabla padre. Analogamente, debemos proveer mecanismos para poder realizar inserciones consistentes de entidades padres que requieran insercion en tablas hijas. Para la tabla Voto, el punto anterior resuelve esto. Ciudadano no tiene herencia disjunta, con lo cual, no es necesario proveer este mecanismo. Se proveera un mecanismo (\textbf{Stored Procedure}) para crear elecciones de diferentes tipos. 
 	\end{itemize}
 \end{itemize}
 
 
-\fk{OJO QUE VAMOS A USAR TRANSACCION EN UN STORED PROCEDURE.}
+\fk{OJO QUE VAMOS A TENER QUE USAR TRANSACCIONES EN LOS STORED PROCEDURES.}
 ojo con los \textbf{insert triggers} y los updates, habria que prohibir los updates o hacer triggers en insert y update?
 no se deberian permitir deletes ni updates sobre voto(y posiblemente otras tablas). ??
+
+\subsubsection{Stored Procedures}
+Estos procedimientos permiten realizar operaciones que involucran mas de una operacion en la base de datos de manera atomica.
+\begin{itemize}
+	\item Voto a candidato(dniVotante, dniCandidato, idMesa)
+	\item Voto a consulta popular(dniVotante, idMesa, respuestaPlesbicito)
+	\item Crear eleccion(tipo)
+\end{itemize}
