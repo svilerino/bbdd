@@ -1,15 +1,11 @@
 \subsection{Modelo Fisico}
 \subsubsection{Motor elegido}
-
-\textbf{Microsoft Sql Server 2008}
+El motor elegido para implementar la solucion es \textbf{Microsoft Sql Server 2008} junto a sus herramientas graficas.
 
 \subsubsection{Diagrama fisico}
-\subsubsection{Script de creacion de base de datos fisica}
-Por motivos de latex y caracteres, no se pueden incluir los scripts. Los scripts .sql se encuentran en la carpeta fuentes.
-
 \begin{landscape}
 	\begin{figure}[t]
-	  \centering	
+	  \centering
 		\includegraphics[scale=0.35]{fig/modelo-fisico.png}
 	  \caption{Diagrama fisico.}
 	\end{figure}
@@ -124,7 +120,3 @@ Modelaremos las restricciones al modelo utilizando funcionalidades provistas por
 \fk{OJO QUE VAMOS A USAR TRANSACCION EN UN STORED PROCEDURE.}
 ojo con los \textbf{insert triggers} y los updates, habria que prohibir los updates o hacer triggers en insert y update?
 no se deberian permitir deletes ni updates sobre voto(y posiblemente otras tablas). ??
-
---Utiles para testear triggers rapido
---ALTER TABLE Voto NOCHECK CONSTRAINT ALL
---ALTER TABLE Voto CHECK CONSTRAINT ALL
