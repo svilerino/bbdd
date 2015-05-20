@@ -86,15 +86,15 @@ Modelaremos las restricciones al modelo utilizando funcionalidades provistas por
 		\begin{itemize}
 			\item[\Checkmark] \textbf{Constraint Check}: las FK de presidente y vicepresidente deben referenciar distintos ciudadanos por mesa.
 			
-			\item[\Checkmark] \textbf{Before Insert trigger} en Mesa que verifique que las personas referenciadas por idPresidente y idVicepresidente no participan en ningun otro cargo (conductor, tecnico, candidato o fiscal) en esa eleccion.
+			\item[\Checkmark] \textbf{Instead of Insert trigger} en Mesa que verifique que las personas referenciadas por idPresidente y idVicepresidente no participan en ningun otro cargo (conductor, tecnico, candidato o fiscal) en esa eleccion.
 			
-			\item[\Checkmark] \textbf{Before Insert trigger} en Camion que verifique que la persona referenciada por idConductor no participa en ningun otro cargo (presidente, vicepresidente, tecnico, candidato o fiscal) en esa eleccion.
+			\item[\Checkmark] \textbf{Instead of Insert trigger} en Camion que verifique que la persona referenciada por idConductor no participa en ningun otro cargo (presidente, vicepresidente, tecnico, candidato o fiscal) en esa eleccion.
 
-			\item[\Checkmark] \textbf{Before Insert trigger} en Maquina que verifique que la persona referenciada por idTecnico no participa en ningun otro cargo (presidente, vicepresidente, conductor, candidato o fiscal) en esa eleccion.
+			\item[\Checkmark] \textbf{Instead of Insert trigger} en Maquina que verifique que la persona referenciada por idTecnico no participa en ningun otro cargo (presidente, vicepresidente, conductor, candidato o fiscal) en esa eleccion.
 
-			\item[\Checkmark] \textbf{Before Insert trigger} en Postulaciones que verifique que la persona referenciada por DNI no participa en ningun otro cargo (presidente, vicepresidente, conductor, tecnico o fiscal) en esa eleccion.
+			\item[\Checkmark] \textbf{Instead of Insert trigger} en Postulaciones que verifique que la persona referenciada por DNI no participa en ningun otro cargo (presidente, vicepresidente, conductor, tecnico o fiscal) en esa eleccion.
 
-			\item[\Checkmark] \textbf{Before Insert trigger} en Fiscales que verifique que la persona referenciada por DNI no participa en ningun otro cargo (presidente, vicepresidente, conductor, tecnico o candidato) en esa eleccion.
+			\item[\Checkmark] \textbf{Instead of Insert trigger} en Fiscales que verifique que la persona referenciada por DNI no participa en ningun otro cargo (presidente, vicepresidente, conductor, tecnico o candidato) en esa eleccion.
 		\end{itemize}	
 \end{itemize}
 \vspace{1.2cm}
@@ -103,6 +103,7 @@ Modelaremos las restricciones al modelo utilizando funcionalidades provistas por
 		\item[$\bigstar$] Toda persona que vota en una mesa, debe tener nulo el campo selloVoto del padron para dicha mesa. ie. No permitir que la gente vote mas de una vez por eleccion.
 		\item[$\bigstar$] Para todo voto que se inserta se debe actualizar correctamente la fecha y hora en la que voto y poniendo el “sello” virtual en el padron asignando un valor no nulo a cuandoVoto.
 		\item[$\bigstar$] Para todo voto que se inserta se debe actualizar correctamente la tabla hija de ser necesario. ie Voto y Voto A Candidato.
+		\item[$\bigstar$] Validar que el voto puede hacerse en la fecha de la eleccion de 8am a 6pm.
 		\begin{itemize}
 			\item[\Checkmark] Con respecto a las restricciones referidas al voto y el sello en el padron, no podemos modelarlas con before y after triggers dado que no tenemos forma de navegar desde la tabla voto hacia el padron(no se guarda info de la persona en la tabla voto.). Con lo cual crearemos un stored procedure, que realizará la operacion de voto como una transacción, verificando que el sello sea NULO antes de insertar el voto y que el sello contenga el datetime una vez insertado el voto. Ademas de realizar la consistencia de insercion del voto si es a candidato en varias tablas. Las validaciones adicionales al voto mencionadas anteriormente, estan contempladas dentro de este procedimiento pues las tablas involucradas ya contienen los triggers necesarios.
 		\end{itemize}
