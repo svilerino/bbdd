@@ -6,7 +6,7 @@
 	\item Toda persona que vota en una mesa, debe tener nulo el campo selloVoto del padron para dicha mesa. ie. No permitir que la gente vote mas de una vez por eleccion.
 	\item  Para voto que se inserta se debe actualizar correctamente la fecha y hora en la que voto y poniendo el “sello” virtual en el padron asignando un valor no nulo a cuandoVoto.
 	\item  La suma de los votos de todas las mesas de todos los candidatos debe ser menor o igual(votos en blanco diferencia) a la cantidad de ciudadanos que tiene el timestamp cuandoVoto? No nulo en el padron de dicha eleccion. (notar que esto tambien lo acota por la cantidad de ciudadanos)
-	\item  Cada partido politico presenta un solo candidato.
+	\item  Cada partido politico presenta un solo candidato por eleccion.
 	\item  Todos los votos para una eleccion son: o bien consulta popular o bien de tipo candidato según corresponda el tipo de eleccion
 	\item Si la eleccion es una consulta popular, los votos deben ser si/no. Sino, deben ser candidatos
 	\item Un voto a candidato tiene que ser a un candidato que este postulado en esa eleccion.

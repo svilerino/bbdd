@@ -16,83 +16,114 @@ Por motivos de latex y caracteres, no se pueden incluir los scripts. Los scripts
 \end{landscape}
 
 \subsubsection{Modelado fisico de las restricciones con triggers}
-Modelaremos las restricciones al modelo utilizando funcionalidades provistas por el motor de la base de datos, como ser \textbf{Stored Procedures}, \textbf{Triggers}, \textbf{Checks}, etc. segun nos parezca conveniente. A continuacion se presenta el modelado de las restricciones. La notacion utilizada es: Solucion implementada, restricciones que resuelve itemizadas de forma anidada. 
+Modelaremos las restricciones al modelo utilizando funcionalidades provistas por el motor de la base de datos, como ser \textbf{Stored Procedures}, \textbf{Triggers}, \textbf{Checks}, etc. segun nos parezca conveniente. A continuacion se presenta el modelado de las restricciones. La notacion utilizada es: Restricciones resueltas, soluciones itemizadas de forma anidada. 
 
 \begin{itemize}
 %------------------------- Done -------------------------
-		\item Se crearon \textbf{Check Constraints} para validar los campos \texttt{tipo} de las tablas que tienen jerarquias disjuntas.
+		\item[$\bigstar$] Los campos tipo de las tablas con jerarquia disjunta deben contener los valores correctos. 
 		\begin{itemize}
-			\item Los campos tipo de las tablas con jerarquia disjunta deben contener los valores correctos. 
+			\item[\Checkmark] Se crearon \textbf{Check Constraints} para validar los campos \texttt{tipo} de las tablas que tienen jerarquias disjuntas.
 		\end{itemize}
-
+\end{itemize}
+\vspace{1.2cm}
+\begin{itemize}
 %------------------------- Done -------------------------
-	\item \textbf{Insert trigger} sobre tabla voto. navegamos a mesa y de mesa a eleccion y chequeamos que el campo tipo de la eleccion corresponda con el campo tipo del voto.
+		\item[$\bigstar$] Todos los votos para una eleccion son: o bien consulta popular o bien de tipo candidato según corresponda el tipo de eleccion.
+		\item[$\bigstar$] Si la eleccion es una consulta popular, los votos deben ser si/no. Sino, deben ser candidatos.
 		\begin{itemize}
-			\item Todos los votos para una eleccion son: o bien consulta popular o bien de tipo candidato según corresponda el tipo de eleccion
-			\item Si la eleccion es una consulta popular, los votos deben ser si/no. Sino, deben ser candidatos.
+			\item[\Checkmark] \textbf{After Insert trigger} sobre tabla voto. navegamos a mesa y de mesa a eleccion y chequeamos que el campo tipo de la eleccion corresponda con el campo tipo del voto. Sino, rollbackeamos.
 		\end{itemize}
-
+\end{itemize}
+\vspace{1.2cm}
+\begin{itemize}
 %------------------------- Done -------------------------
-	\item \textbf{Insert trigger} sobre tabla voto a candidato. Navegamos a Voto, luego a Mesa y obtenemos el idEleccion. Luego buscamos los postulados a dicha eleccion y verificamos que el voto sea valido.
+		\item[$\bigstar$] Un voto a candidato, debe referenciar a un candidato postulado para dicha eleccion.
 		\begin{itemize}
-			\item Un voto a candidato, debe referenciar a un candidato postulado para dicha eleccion.
+			\item[\Checkmark] \textbf{After Insert trigger} sobre tabla voto a candidato. Navegamos a Voto, luego a Mesa y obtenemos el idEleccion. Luego buscamos los postulados a dicha eleccion y verificamos que el voto sea valido. Sino, rollbackeamos.
 		\end{itemize}
-
+\end{itemize}
+\vspace{1.2cm}
+\begin{itemize}
 %------------------------- Done -------------------------
-	\item Queda determinado por la PK de la tabla Postulaciones.
+		\item[$\bigstar$] No hay candidatos repetidos en una eleccion.
 		\begin{itemize}
-			\item No hay candidatos repetidos en una eleccion.
+			\item[\Checkmark] Queda determinado por la \textbf{PK} de la tabla Postulaciones.
 		\end{itemize}
-
+\end{itemize}
+\vspace{1.2cm}
+\begin{itemize}
 %------------------------- Done -------------------------
-	\item \textbf{Insert trigger} en postulaciones que no permita hacer insert si ya existe un candidato para dicho partido politico en dicha eleccion.
+		\item[$\bigstar$] Cada partido politico presenta un solo candidato por eleccion.
 		\begin{itemize}
-			\item Cada partido politico presenta un solo candidato.
+			\item[\Checkmark] \textbf{Check Constraint Unique} (idEleccion, idPartidoPolitico) en postulaciones.
 		\end{itemize}
-
+\end{itemize}
+\vspace{1.2cm}
+\begin{itemize}
 %------------------------- Done -------------------------	
-	\item{Queda implicada por el stored procedure de voto, que chequea sello null y marca no null el sello luego. No hay forma que de se inserten mas votos que personas}. \fk{Alguien piense esto a ver si no estoy flasheando plz.}
+		\item[$\bigstar$] La suma de los votos de todas las mesas de todos los candidatos debe ser menor o igual(votos en blanco diferencia) a la cantidad de ciudadanos que tiene el datetime cuandoVoto? No nulo en el padron de dicha eleccion. (notar que esto tambien lo acota por la cantidad de ciudadanos). 
+		\item[$\bigstar$] \fk{Alguien piense esto a ver si no estoy flasheando plz.}
 		\begin{itemize}
-			\item La suma de los votos de todas las mesas de todos los candidatos debe ser menor o igual(votos en blanco diferencia) a la cantidad de ciudadanos que tiene el timestamp cuandoVoto? No nulo en el padron de dicha eleccion. (notar que esto tambien lo acota por la cantidad de ciudadanos). 
+			\item{Queda implicada por el stored procedure de voto, que chequea sello null y marca no null el sello luego. No hay forma que de se inserten mas votos que personas}.
 		\end{itemize}
+\end{itemize}
+\vspace{1.2cm}
+\begin{itemize}
+%------------------------- Done -------------------------
+		\item[$\bigstar$] Un ciudadano vota en una sola mesa por eleccion.
+		\begin{itemize}
+			\item[\Checkmark] \textbf{Instead of Insert trigger} en Padron que verifique que para ese DNI, no exista otra mesa, de la misma eleccion, que ya lo tenga asociado. Si no existe la relacion entre dni, mesa y eleccion, se inserta el registro correspondiente.
+		\end{itemize}
+\end{itemize}
+\vspace{1.2cm}
+\begin{itemize}
+%------------------------- Done -------------------------
+		\item[$\bigstar$] Una maquina funciona en una sola mesa por eleccion.
+		\begin{itemize}
+			\item[\Checkmark] \textbf{Instead of Insert Trigger} en Mesa para ver que la maquina asignada no este asignada a otra mesa en esa eleccion. Si no existe una mesa de esta eleccion con esa maquina, se inserta la relacion. 
+		\end{itemize}
+\end{itemize}
+\vspace{1.2cm}
+\begin{itemize}
+%------------------------- Pending -------------------------
+		\item[$\bigstar$] Un ciudadano no pueda ser mas que una y solo una de estas opciones: conductor, tecnico, presidente, vicepresidente, candidato o fiscal en una misma eleccion.
+		\begin{itemize}
+			\item[\Checkmark] \textbf{Constraint Check}: las FK de presidente y vicepresidente deben referenciar distintos ciudadanos por mesa.
+			
+			\item[\Checkmark] \textbf{Before Insert trigger} en Mesa que verifique que las personas referenciadas por idPresidente y idVicepresidente no participan en ningun otro cargo (conductor, tecnico, candidato o fiscal) en esa eleccion.
+			
+			\item[\Checkmark] \textbf{Before Insert trigger} en Camion que verifique que la persona referenciada por idConductor no participa en ningun otro cargo (presidente, vicepresidente, tecnico, candidato o fiscal) en esa eleccion.
 
-%------------------------- Pending -------------------------
-	\item Insert en Mesa para ver que la maquina asignada no este asignada a otra mesa en esa eleccion.
-		\begin{itemize}
-			\item Una maquina funciona en una sola mesa por eleccion.
-		\end{itemize}
-	
-%------------------------- Pending -------------------------
-	\item \textbf{Insert trigger} en Mesa que verifique que en esa eleccion, no haya otras mesas donde este ciudadano sea tecnico, presidente, vicepresidente, fiscal o conductor. \textbf{Esto debe incluir que en la mesa a insertar este el mismo DNI en varias FK.}
-	\item \textbf{Insert trigger} en Conductor que verifique que en esa eleccion, no haya  mesas donde este ciudadano sea tecnico, presidente, vicepresidente o fiscal.
-		\begin{itemize}
-			\item Un ciudadano no pueda ser tecnico, presidente, vicepresidente o fiscal en una misma eleccion.
-			\item Un ciudadano no puede ser conductor y tecnico, presidente, vicepresidente o fiscal en una misma eleccion.
+			\item[\Checkmark] \textbf{Before Insert trigger} en Maquina que verifique que la persona referenciada por idTecnico no participa en ningun otro cargo (presidente, vicepresidente, conductor, candidato o fiscal) en esa eleccion.
+
+			\item[\Checkmark] \textbf{Before Insert trigger} en Postulaciones que verifique que la persona referenciada por DNI no participa en ningun otro cargo (presidente, vicepresidente, conductor, tecnico o fiscal) en esa eleccion.
+
+			\item[\Checkmark] \textbf{Before Insert trigger} en Fiscales que verifique que la persona referenciada por DNI no participa en ningun otro cargo (presidente, vicepresidente, conductor, tecnico o candidato) en esa eleccion.
 		\end{itemize}	
-
+\end{itemize}
+\vspace{1.2cm}
+\begin{itemize}
 %------------------------- Pending -------------------------
-	\item \textbf{Insert trigger} en Padron que verifique que para ese DNI, no exista otra mesa, de la misma eleccion, que ya lo tenga asociado.
+		\item[$\bigstar$] Toda persona que vota en una mesa, debe tener nulo el campo selloVoto del padron para dicha mesa. ie. No permitir que la gente vote mas de una vez por eleccion.
+		\item[$\bigstar$] Para todo voto que se inserta se debe actualizar correctamente la fecha y hora en la que voto y poniendo el “sello” virtual en el padron asignando un valor no nulo a cuandoVoto.
+		\item[$\bigstar$] Para todo voto que se inserta se debe actualizar correctamente la tabla hija de ser necesario. ie Voto y Voto A Candidato.
 		\begin{itemize}
-			\item Un ciudadano vota en una sola mesa por eleccion.
+			\item[\Checkmark] Con respecto a las restricciones referidas al voto y el sello en el padron, no podemos modelarlas con before y after triggers dado que no tenemos forma de navegar desde la tabla voto hacia el padron(no se guarda info de la persona en la tabla voto.). Con lo cual crearemos un stored procedure, que realizará la operacion de voto como una transacción, verificando que el sello sea NULO antes de insertar el voto y que el sello contenga el datetime una vez insertado el voto. 
 		\end{itemize}
-
+\end{itemize}
+\vspace{1.2cm}
+\begin{itemize}
 %------------------------- Pending -------------------------
-	\item Con respecto a las restricciones 1 y 2, referidas al voto y el sello en el padron, no podemos modelarlas con before y after triggers dado que no tenemos forma de navegar desde la tabla voto hacia el padron(no se guarda info de la persona en la tabla voto.). Con lo cual crearemos un stored procedure, que realizará la operacion de voto como una transacción, verificando que el sello sea NULO antes de insertar el voto y que el sello contenga el timestamp una vez insertado el voto. Debe manejar el tema de la jerarquia de la tabla voto e insertar voto en las 2 tablas si es a candidato.
-		\begin{itemize}
-			\item Toda persona que vota en una mesa, debe tener nulo el campo selloVoto del padron para dicha mesa. ie. No permitir que la gente vote mas de una vez por eleccion.
-			\item Para voto que se inserta se debe actualizar correctamente la fecha y hora en la que voto y poniendo el “sello” virtual en el padron asignando un valor no nulo a cuandoVoto.
-		\end{itemize}
-
+	\item[$\bigstar$] Inserciones consistentes en tablas con jerarquia: ie. Entidades: Ciudadano, Eleccion, Voto y sus hijos. 
+	\begin{itemize}
+		\item[\Checkmark] Dado que la PK de la tabla hijo es FK de la PK de la tabla padre, la insercion en tablas hijos fallara si no existe el registro correspondiente en la tabla padre. Analogamente, debemos proveer mecanismos para poder realizar inserciones consistentes de entidades padres que requieran insercion en tablas hijas. ie Voto de tipo \texttt{A Candidato} requiere la insercion de un registro en la tabla \texttt{Votos A Candidato} relacionando el candidato en cuestion. Para esto proveeremos \textbf{stores procedures} para realizar dichas operaciones. 
+	\end{itemize}
 \end{itemize}
 
-
-\fk{Ver como automatizar los insert de las tablas con herencia}
-\fk{Testear triggers para validaciones. Especialmente aquellos donde el trigger es despues del insert y se pregunta por tablas vacias. ie. Postulaciones. }
 
 \fk{OJO QUE VAMOS A USAR TRANSACCION EN UN STORED PROCEDURE.}
 ojo con los \textbf{insert triggers} y los updates, habria que prohibir los updates o hacer triggers en insert y update?
 no se deberian permitir deletes ni updates sobre voto(y posiblemente otras tablas). ??
-
 
 --Utiles para testear triggers rapido
 --ALTER TABLE Voto NOCHECK CONSTRAINT ALL
