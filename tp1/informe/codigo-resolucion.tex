@@ -89,14 +89,14 @@ FROM         dbo.Voto AS v
                       INNER JOIN dbo.Postulaciones post ON (post.idEleccion = elec.idEleccion AND post.DNI = ciu.DNI)
                       INNER JOIN dbo.Partido_Politico partPolitico ON post.idPartido = partPolitico.idPartido
 WHERE     (v.idMesa IN
-                          (SELECT     idMesa
-                            FROM          dbo.Mesa AS m
-                            WHERE      (idEleccion IN
-                                                       (SELECT     TOP (5) e.idEleccion
-                                                         FROM          dbo.Eleccion AS e INNER JOIN
-                                                                                dbo.Eleccion_Cargo_Provincial AS ecp ON ecp.idEleccion = e.idEleccion
-                                                         WHERE      (e.tipo = 'Cargo Provincial') AND (YEAR(e.Fecha) = YEAR(GETDATE()))
-                                                         ORDER BY e.Fecha DESC))))
+              (SELECT     idMesa
+                FROM          dbo.Mesa AS m
+                WHERE      (idEleccion IN
+		           (SELECT     TOP (5) e.idEleccion
+		             FROM          dbo.Eleccion AS e INNER JOIN
+		                                    dbo.Eleccion_Cargo_Provincial AS ecp ON ecp.idEleccion = e.idEleccion
+		             WHERE      (e.tipo = 'Cargo Provincial') AND (YEAR(e.Fecha) = YEAR(GETDATE()))
+		             ORDER BY e.Fecha DESC))))
 GROUP BY vc.DNI, partPolitico.Nombre, ciu.Nombre, ciu.Apellido, elec.Fecha
 \end{lstlisting}
 
