@@ -1,3 +1,118 @@
 \subsection{Codigo de resolucion de consignas}
 \subsubsection{Script de creacion de base de datos fisica}
 Por motivos de latex y caracteres, no se pueden incluir los scripts. Los scripts .sql se encuentran en la carpeta fuentes.
+
+\subsubsection{Consultas pedidas por el enunciado}
+\begin{enumerate}
+	\item Poder obtener los ganadores de las elecciones transcurridas en el último año.
+		Para resolver este problema nos creamos una vista auxiliar que nos devuelve la lista de elcciones del ultimo a\~no, 
+		con sus resultados, es decir, el ranking (Candidato, CantVotos) para cada eleccion del último año.
+
+		\begin{lstlisting}
+		CREATE VIEW [dbo].[Ranking_Elecciones_Cargo_Ultimo_Anio] AS
+		--Vista auxiliar para ranking de las ultimas elecciones del anio.
+		SELECT 
+	elec.Fecha as FechaEleccion, 
+	elec.tipo as TipoEleccion,
+	(ciu.Nombre + ciu.Apellido) as Candidato, 
+	COUNT(vc.idVoto) AS CantVotos
+FROM         dbo.Voto AS v 
+INNER JOIN dbo.Voto_A_Candidato AS vc ON v.idVoto = vc.idVoto -- Quiero saber a que candidato fue ese voto
+INNER JOIN dbo.Ciudadano AS ciu ON vc.DNI= ciu.DNI -- Join para saber el nombre del candidato(es un ciudadano)
+INNER JOIN dbo.Mesa AS m ON m.idMesa = v.idMesa -- Join para saber la eleccion de la mesa y agrupar
+INNER JOIN dbo.Eleccion AS elec ON elec.idEleccion = m.idEleccion -- Join para saber la fecha de la eleccion
+WHERE	(v.idMesa IN
+	(SELECT     idMesa
+	FROM          dbo.Mesa AS m
+	WHERE      (idEleccion IN
+		(SELECT     idEleccion
+		FROM          dbo.Eleccion AS e
+		WHERE      (YEAR(Fecha) = YEAR(GETDATE()))))))
+GROUP BY vc.DNI, ciu.Nombre, ciu.Apellido, elec.Fecha, elec.tipo
+ORDER BY FechaEleccion ASC, CantVotos DESC
+
+		\end{lstlisting}
+		
+	Luego aplicamos una consulta sobre esta vista, que nos devuelve para cada eleccion de la vista, el (o los en caso de empate) ganador(es).
+	Creamos otra vista para acceder directamente a esta consulta pedida.
+		
+		\begin{lstlisting}
+			CREATE VIEW [dbo].[Ganadores_Elecciones_Cargo_Ultimo_Anio] AS
+			SELECT FechaEleccion, Candidato, MAX(CantVotos) as ganador_con_max_votos
+			FROM Ranking_Elecciones_Cargo_Ultimo_Anio
+			GROUP BY FechaEleccion, Candidato
+		\end{lstlisting}
+
+		Finalmente, se accede a los datos pedidos ejecutando:
+		\begin{lstlisting}
+			SELECT * FROM dbo.[Ganadores_Elecciones_Cargo_Ultimo_Anio]
+		\end{lstlisting}
+
+	\item Poder consultar las cinco personas que más tarde fueron a votar antes de terminar
+	la votación por cada centro electoral en una elección.
+	Usamos una tabla intermedia que obtiene los votos de la eleccion, particionado por centro electoral, a su vez, utilizamos la funcion \texttt{ROW\_NUMBER} para numerar los resultados de cada grupo, ordenados por tiempo de votacion y quedarnos con los 5 mayores tiempos de votacion de cada centro.
+	\begin{lstlisting}
+		WITH TOPFIVE AS (
+	    SELECT cen.Nombre_Establecimiento, (ciu.Nombre + ciu.Apellido) as Votante, p.selloVoto as HoraVoto,
+	    ROW_NUMBER() over (
+	        PARTITION BY cen.idCentro
+	        ORDER BY p.selloVoto DESC
+	    ) AS NumFila
+	    FROM Padron p
+	    INNER JOIN Mesa m ON m.idMesa = p.idMesa
+	    INNER JOIN Centro cen ON cen.idCentro = m.idCentro
+	    INNER JOIN Ciudadano ciu ON ciu.DNI = p.DNI
+	    WHERE p.idMesa IN (SELECT m.idMesa FROM Mesa m WHERE m.idEleccion = 2)--<eleccionTarget>
+		)
+	SELECT Nombre_Establecimiento, Votante, HoraVoto FROM TOPFIVE WHERE NumFila <= 5--cantidad de items por grupo
+	\end{lstlisting}
+
+	\item Poder consultar quienes fueron los partidos políticos que obtuvieron más del 20\%
+	en las últimas cinco elecciones provinciales a gobernador.
+	\textbf{Nota:} En las elecciones a cargo provincial se elije gobernador(legislativas y municipales estan separadas de las provinciales).\\
+
+Creamos una vista que nos devuelve el ranking de las ultimas 5 elecciones a gobernador, y ademas la cantidad de votos por cada eleccion.
+
+\begin{lstlisting}
+	SELECT elec.Fecha AS FechaEleccion, ciu.Nombre + ciu.Apellido AS Candidato, partPolitico.Nombre as PartidoPolitico, 
+COUNT(vc.idVoto) AS CantVotos,  
+
+COUNT(*) over (
+	        PARTITION BY elec.fecha
+	    ) AS Cant_Total_Votos_Por_Eleccion  
+
+FROM         dbo.Voto AS v 
+                      INNER JOIN dbo.Voto_A_Candidato AS vc ON v.idVoto = vc.idVoto 
+                      INNER JOIN dbo.Ciudadano AS ciu ON vc.DNI = ciu.DNI 
+                      INNER JOIN dbo.Mesa AS m ON m.idMesa = v.idMesa 
+                      INNER JOIN dbo.Eleccion AS elec ON elec.idEleccion = m.idEleccion
+                      INNER JOIN dbo.Postulaciones post ON (post.idEleccion = elec.idEleccion AND post.DNI = ciu.DNI)
+                      INNER JOIN dbo.Partido_Politico partPolitico ON post.idPartido = partPolitico.idPartido
+WHERE     (v.idMesa IN
+                          (SELECT     idMesa
+                            FROM          dbo.Mesa AS m
+                            WHERE      (idEleccion IN
+                                                       (SELECT     TOP (5) e.idEleccion
+                                                         FROM          dbo.Eleccion AS e INNER JOIN
+                                                                                dbo.Eleccion_Cargo_Provincial AS ecp ON ecp.idEleccion = e.idEleccion
+                                                         WHERE      (e.tipo = 'Cargo Provincial') AND (YEAR(e.Fecha) = YEAR(GETDATE()))
+                                                         ORDER BY e.Fecha DESC))))
+GROUP BY vc.DNI, partPolitico.Nombre, ciu.Nombre, ciu.Apellido, elec.Fecha
+\end{lstlisting}
+
+Creamos otra vista que sobre la vista anterior, calcula el porcentaje de votos de cada partido y lo filtra por quienes tienen mas de 20\%.
+
+\begin{lstlisting}
+SELECT     TOP (100) PERCENT FechaEleccion, PartidoPolitico, CantVotos * 100 / Cant_Total_Votos_Por_Eleccion AS Porcentaje
+FROM         dbo.Ranking_Candidatos_Ultimas_5_Elecciones_A_Gobernador
+WHERE     (CantVotos * 100 / Cant_Total_Votos_Por_Eleccion >= 20)
+ORDER BY FechaEleccion, CantVotos DESC
+\end{lstlisting}
+
+Finalmente, consultamos la vista.
+
+\begin{lstlisting}
+	SELECT * FROM Partidos_Con_Mas_Del_20_Porciento_Ultimas_5_Gobernador
+\end{lstlisting}
+
+\end{enumerate}
