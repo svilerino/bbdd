@@ -12,7 +12,7 @@ El motor elegido para implementar la solucion es \textbf{Microsoft Sql Server 20
 \end{landscape}
 
 \subsubsection{Modelado fisico de las restricciones con triggers}
-Modelaremos las restricciones al modelo utilizando funcionalidades provistas por el motor de la base de datos, como ser \textbf{Stored Procedures}, \textbf{Triggers}, \textbf{Checks}, etc. segun nos parezca conveniente. A continuacion se presenta el modelado de las restricciones. La notacion utilizada es: Restricciones resueltas, soluciones itemizadas de forma anidada. 
+Modelaremos las restricciones al modelo utilizando funcionalidades provistas por el motor de la base de datos, como ser \textbf{Stored Procedures}, \textbf{Triggers}, \textbf{Checks}, etc. segun nos parezca conveniente. A continuacion se presenta el modelado de las restricciones. La notacion utilizada es: Restricciones resueltas, soluciones itemizadas de forma anidada. \textbf{Nota:} Algunas restricciones quedaran expresadas en lenguaje natural en la seccion \texttt{Supuestos y Restricciones del DER}.
 
 \begin{itemize}
 %------------------------- Done -------------------------
@@ -78,25 +78,24 @@ Modelaremos las restricciones al modelo utilizando funcionalidades provistas por
 			\item[\Checkmark] \textbf{Instead of Insert Trigger} en Mesa para ver que la maquina asignada no este asignada a otra mesa en esa eleccion. Si no existe una mesa de esta eleccion con esa maquina, se inserta la relacion. 
 		\end{itemize}
 \end{itemize}
-\vspace{1.2cm}
-\begin{itemize}
-		\item[$\bigstar$] \fk{Pendiente codear los triggers/checks de la siguiente estrellita.}
+%\vspace{1.2cm}
+%\begin{itemize}
 %------------------------- Pending -------------------------
-		\item[$\bigstar$] Un ciudadano no pueda ser mas que una y solo una de estas opciones: conductor, tecnico, presidente, vicepresidente, candidato o fiscal en una misma eleccion.
-		\begin{itemize}
-			\item[\Checkmark] \textbf{Constraint Check}: las FK de presidente y vicepresidente deben referenciar distintos ciudadanos por mesa.
-			
-			\item[\Checkmark] \textbf{Instead of Insert trigger} en Mesa que verifique que las personas referenciadas por idPresidente y idVicepresidente no participan en ningun otro cargo (conductor, tecnico, candidato o fiscal) en esa eleccion.
-			
-			\item[\Checkmark] \textbf{Instead of Insert trigger} en Camion que verifique que la persona referenciada por idConductor no participa en ningun otro cargo (presidente, vicepresidente, tecnico, candidato o fiscal) en esa eleccion.
+%		\item[$\bigstar$] Un ciudadano no pueda ser mas que una y solo una de estas opciones: conductor, tecnico, presidente, vicepresidente, candidato o fiscal en una misma eleccion.
+%		\begin{itemize}
+%			\item[\Checkmark] \textbf{Constraint Check}: las FK de presidente y vicepresidente deben referenciar distintos ciudadanos por mesa.
+%			
+%			\item[\Checkmark] \textbf{Instead of Insert trigger} en Mesa que verifique que las personas referenciadas por idPresidente y idVicepresidente no participan en ningun otro cargo (conductor, tecnico, candidato o fiscal) en esa eleccion.
+%			
+%			\item[\Checkmark] \textbf{Instead of Insert trigger} en Camion que verifique que la persona referenciada por idConductor no participa en ningun otro cargo (presidente, vicepresidente, tecnico, candidato o fiscal) en esa eleccion.
 
-			\item[\Checkmark] \textbf{Instead of Insert trigger} en Maquina que verifique que la persona referenciada por idTecnico no participa en ningun otro cargo (presidente, vicepresidente, conductor, candidato o fiscal) en esa eleccion.
+%			\item[\Checkmark] \textbf{Instead of Insert trigger} en Maquina que verifique que la persona referenciada por idTecnico no participa en ningun otro cargo (presidente, vicepresidente, conductor, candidato o fiscal) en esa eleccion.
 
-			\item[\Checkmark] \textbf{Instead of Insert trigger} en Postulaciones que verifique que la persona referenciada por DNI no participa en ningun otro cargo (presidente, vicepresidente, conductor, tecnico o fiscal) en esa eleccion.
+%			\item[\Checkmark] \textbf{Instead of Insert trigger} en Postulaciones que verifique que la persona referenciada por DNI no participa en ningun otro cargo (presidente, vicepresidente, conductor, tecnico o fiscal) en esa eleccion.
 
-			\item[\Checkmark] \textbf{Instead of Insert trigger} en Fiscales que verifique que la persona referenciada por DNI no participa en ningun otro cargo (presidente, vicepresidente, conductor, tecnico o candidato) en esa eleccion.
-		\end{itemize}	
-\end{itemize}
+%			\item[\Checkmark] \textbf{Instead of Insert trigger} en Fiscales que verifique que la persona referenciada por DNI no participa en ningun otro cargo (presidente, vicepresidente, conductor, tecnico o candidato) en esa eleccion.
+%		\end{itemize}	
+%\end{itemize}
 \vspace{1.2cm}
 \begin{itemize}
 %------------------------- Stored procedure -------------------------
