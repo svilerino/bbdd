@@ -3,3 +3,121 @@
 --Utiles para testear triggers rapido
 --ALTER TABLE Voto NOCHECK CONSTRAINT ALL
 --ALTER TABLE Voto CHECK CONSTRAINT ALL
+
+A continuacion se realizaran pruebas de solidez y correctitud de las restricciones implementadas:
+
+\subsubsection{Jerarquia Disjuta NO SE}
+
+Se realizan tests para verificar la implementacion de la restriccion: "Los campos tipo de las tablas con jerarquia disjunta deben contener los valores correctos".
+
+\begin{enumerate}
+
+\item \textbf{Eleccion:} La entidad eleccion posee un campo tipo, que particiona todas las entidades que heredan
+de ella. Haremos un test para cada una.
+
+\begin{enumerate}
+
+\item Consulta Popular: Creamos una instancia de eleccion de tipo: "Consulta Popular" y verificamos el
+resultado:
+
+\end{enumerate}
+
+\end{enumerate}
+
+\subsubsection{Votos de una eleccion}
+
+Verificaremos la conjuncion de las restricciones "Todos los votos para una eleccion son: o bien consulta popular o bien de tipo candidato según corresponda el tipo de eleccion",  "Si la eleccion es una consulta popular, los votos deben ser si/no. sino, deben ser candidatos'' y por ultimo, ''Un voto a candidato, debe referenciar a un candidato postulado para dicha eleccion''
+
+\begin{enumerate}
+
+\item \textbf{Consulta Popular:} Si la eleccion es una consulta popular, los votos cuya clave foranea
+referencia esa eleccion deben ser de tipo ' A Plesbiscito Si ' o ' A Plesbiscito No' .
+
+	\begin{itemize}
+	\item 'A Plesbiscito Si': Creamos una elección de tipo 'Consulta Popular', e insertamos un voto
+	de tipo 'A Plesbiscito Si'.
+	\begin{lstlisting}
+	SELECT SAPE
+	\end{lstlisting}
+	
+	\item 'A Plesbiscito No': Creamos una elección de tipo 'Consulta Popular', e insertamos un voto
+	de tipo 'A Plesbiscito No'.
+	\begin{lstlisting}
+	SELECT NO SAPE
+	\end{lstlisting}
+	\item 'Voto de tipo invalido': Creamos una 'Consulta Popular', e insertamos un voto
+	de tipo 'A Plesbiscito Ni'.
+	\begin{lstlisting}
+	SELECT CAPAZ SAPE
+	\end{lstlisting}
+	
+	\item 'Voto a un candidato': Creamos una 'Consulta Popular', e insertamos un voto
+	de tipo 'A Candidato'.
+	\begin{lstlisting}
+	SELECT NI AHI SAPE
+	\end{lstlisting}	
+	
+	\end{itemize}
+
+\item \textbf{Eleccion a candidato:}  Si la eleccion es de tipo 'Cargo Federal', 'Cargo Municipal', Cargo Provincial' o tipo 'Cargo Legislativo', los votos cuya clave foranea referencia esa eleccion deben ser de tipo 'A Candidato', y deben referenciar a un candidato que este postulado a dicha eleccion
+
+	\begin{itemize}
+	\item 'Candidato Valido': Creamos una elección de tipo 'Cargo Federal', e insertamos un voto
+	de tipo 'A candidato', cuya clave foranea a candidato referencia a un candidato cuyo DNI se encuentra en la tabla postulaciones para esa eleccion.
+	\begin{lstlisting}
+	SELECT ESTA BIEN
+	\end{lstlisting}
+	
+	\item 'Candidato No Valido': Creamos una elección de tipo 'Cargo Provincial', e insertamos un voto
+	de tipo 'A candidato', cuya clave foranea a candidato NO referencia a un candidato cuyo DNI se encuentra en la tabla postulaciones para esa eleccion.
+	\begin{lstlisting}
+	SELECT WILLIE
+	\end{lstlisting}
+		
+	\item 'Voto a plesbiscito': Creamos una elección de tipo 'Cargo Provincial', e insertamos un voto
+	de tipo 'A plesbiscito Si'.
+	\begin{lstlisting}
+	SELECT SAPE
+	\end{lstlisting}
+			
+	\end{itemize}
+
+\subsubsection{Multiples Candidatos:} Un partido politico puede presentar a un solo candidato por eleccion. Para chequear esto, vamos a crear una eleccion de tipo 'Cargo Federal', un partido politico
+'Frente por la Derrota', y vamos a crear dos candidatos distintos y postularlos para la misma eleccion.
+	\begin{lstlisting}
+	SELECT CAMPORA
+	\end{lstlisting}
+			
+
+\subsubsection{Multiples Mesas para un ciudadano:} Un partido politico puede presentar a un solo candidato por eleccion. Para chequear esto, vamos a crear una eleccion de tipo 'Cargo Federal', un partido politico
+'Frente por la Derrota', y vamos a crear dos candidatos distintos y postularlos para la misma eleccion.
+	\begin{lstlisting}
+	SELECT UCR
+	\end{lstlisting}
+			
+
+\subsubsection{Multiples Mesas para una  maquina:} Un ciudadano vota en una sola mesa por eleccion. Para chequear esto creamos una eleccion de tipo 'Consulta Popular', un ciudadano, dos mesas para esa eleccion, y asignamos al ciudadano en ambas mesas.
+	\begin{lstlisting}
+	SELECT PRO
+	\end{lstlisting}
+								
+\subsubsection{Multiples Mesas para una maquina}:Una maquina funciona en una sola mesa por eleccion. Para chequear esto creamos una eleccion de tipo 'Consulta Popular', una maquina, dos mesas para esa eleccion, y asignamos a la maquina en ambas mesas.
+	\begin{lstlisting}
+	SELECT EL NENE
+	\end{lstlisting}
+	
+\subsubsection{Validaciones de los votos}: Validaremos las restricciones: ''No permitir que la gente vote mas de una vez por eleccion'', ''El voto puede hacerse en la fecha de la eleccion de 8am a 6pm''. 
+	\begin{itemize}
+	\item 'Unico voto': Creamos una elección de tipo 'Consulta Popular', y hacemos que un ciudadano intente votar por segunda vez.
+	\begin{lstlisting}
+	SELECT IGNACIO UNBEKANT
+	\end{lstlisting}
+	
+	\item 'Hora valida': Creamos una elección de tipo 'Consulta Popular', y hacemos que un ciudadano 		intente votar en un horario invalido.
+	\begin{lstlisting}
+	SELECT SAPE
+	\end{lstlisting}	
+	
+	\end{itemize}					
+
+\end{enumerate}
