@@ -1,28 +1,6 @@
 \subsection{Codigo de testing de la solucion provista}
-\fk{Testear triggers para validaciones}
---Utiles para testear triggers rapido
---ALTER TABLE Voto NOCHECK CONSTRAINT ALL
---ALTER TABLE Voto CHECK CONSTRAINT ALL
 
-A continuacion se realizaran pruebas de solidez y correctitud de las restricciones implementadas:
-
-\subsubsection{Jerarquia Disjuta NO SE}
-
-Se realizan tests para verificar la implementacion de la restriccion: "Los campos tipo de las tablas con jerarquia disjunta deben contener los valores correctos".
-
-\begin{enumerate}
-
-\item \textbf{Eleccion:} La entidad eleccion posee un campo tipo, que particiona todas las entidades que heredan
-de ella. Haremos un test para cada una.
-
-\begin{enumerate}
-
-\item Consulta Popular: Creamos una instancia de eleccion de tipo: "Consulta Popular" y verificamos el
-resultado:
-
-\end{enumerate}
-
-\end{enumerate}
+En primera instancia, se realizaran pruebas de solidez y correctitud de las restricciones implementadas. Por último, tests de correctitud de las consultas requeridas por el enunciado.
 
 \subsubsection{Votos de una eleccion}
 
@@ -31,34 +9,86 @@ Verificaremos la conjuncion de las restricciones "Todos los votos para una elecc
 \begin{enumerate}
 
 \item \textbf{Consulta Popular:} Si la eleccion es una consulta popular, los votos cuya clave foranea
-referencia esa eleccion deben ser de tipo ' A Plesbiscito Si ' o ' A Plesbiscito No' .
+referencia esa eleccion deben ser de tipo ' A Plesbiscito Si ' o ' A Plesbiscito No'. Creamos una elección de tipo 'Consulta Popular' utilizando la Stored Procedure 'Crear\_ Consulta\_ Popular' con los valores Descripcion: TEST y Fecha: '2015-06-09'. 
+
+A continuacion, debemos crear una mesa. Para eso, debemos tener un presidente, un vicepresidente,
+un centro y una maquina(y para ella, un tecnico). Las creamos ejecutando:
+
+\begin{lstlisting}
+
+INSERT INTO Ciudadano VALUES
+ (1,'JUAN','VOTANTE'),
+ (2,'PEPE','PRESIDENTE'),
+ (3,'VICTOR','VICEPRESIDENTE'),
+ (4,'TOMAS','TECNICO'),
+ (5,'CARLOS', 'CANDIDATO');
+
+ INSERT INTO Centro VALUES
+ (1,'Escuela', '9 de julio 1');
+
+ INSERT INTO Maquina VALUES
+ (1,4)
+
+ INSERT INTO Mesa VALUES
+ (1,1,2,3,1,1,1)
+\end{lstlisting}
 
 	\begin{itemize}
-	\item 'A Plesbiscito Si': Creamos una elección de tipo 'Consulta Popular', e insertamos un voto
-	de tipo 'A Plesbiscito Si'.
+	\item 'A Plesbiscito Si': Insertar un voto 'A Plesbiscito Si' deberia realizarse correctamente.
+	Ejecutamos la Stored Procedure 'Votar\_ Consulta\_ Popular' con los parametros DNIdelVotante=1, idMesaDelVoto=1 y OpcionVoto=1. Acto seguido, ejecutamos:
 	\begin{lstlisting}
-	SELECT SAPE
+	SELECT * FROM Voto
 	\end{lstlisting}
+	Y efectivamente esto nos da como resultado:	
+	\vspace{2mm}
 	
-	\item 'A Plesbiscito No': Creamos una elección de tipo 'Consulta Popular', e insertamos un voto
-	de tipo 'A Plesbiscito No'.
-	\begin{lstlisting}
-	SELECT NO SAPE
-	\end{lstlisting}
-	\item 'Voto de tipo invalido': Creamos una 'Consulta Popular', e insertamos un voto
-	de tipo 'A Plesbiscito Ni'.
-	\begin{lstlisting}
-	SELECT CAPAZ SAPE
-	\end{lstlisting}
+	\begin{tabular}{| l| l| l| l| }
+	\hline 
+	   & idVoto & idMesa & Tipo \\
+	   \hline
+	 1 & 1 & 1 & A Plesbiscito Si \\
+ 	 \hline 
+	\end{tabular}
 	
-	\item 'Voto a un candidato': Creamos una 'Consulta Popular', e insertamos un voto
-	de tipo 'A Candidato'.
-	\begin{lstlisting}
-	SELECT NI AHI SAPE
-	\end{lstlisting}	
+	\vspace{2mm}
+	\item 'A Plesbiscito No': Insertamos un voto de tipo 'A Plesbiscito No', lo cual deberia ejecutarse correctamente, usando la Stored Procedure 'Votar\_ Consulta\_ Popular' con los parametros DNIdelVotante=1, idMesaDelVoto=1 y OpcionVoto=0. Resultado:
 	
+	\begin{tabular}{| l| l| l| l| }
+	\hline 
+	   & idVoto & idMesa & Tipo \\
+	   \hline
+	 1 & 1 & 1 & A Plesbiscito No \\
+ 	 \hline 
+	\end{tabular}
+	
+	\vspace{2mm}	
+	
+	\item 'Voto de tipo invalido': Insertamos un voto de tipo 'A Plesbiscito No', lo cual NO deberia ejecutarse correctamente, usando la Stored Procedure 'Votar\_ Consulta\_ Popular' con los parametros DNIdelVotante=1, idMesaDelVoto=1 y OpcionVoto=3 (Esto representa un tipo de voto invalido). Resultado:
+	
+\begin{tabular}{| l| l| l| l| }
+	\hline 
+	   & idVoto & idMesa & Tipo \\
+	   \hline
+	 &  &  &  \\
+ 	 \hline 
+	\end{tabular}
+	
+	\vspace{2mm}	
+		
+	
+	\item 'Voto a un candidato': Insertamos un voto 'A Candidato' lo cual NO deberia ejecutarse correctamente, usando la Stored Procedure 'Votar\_ Candidato' sobre la Consulta Popular, con los parametros DNIdelVotante=1, idMesaDelVoto=1 y DniCandidato=5. Inmediatamente recibimos el aviso:
+	''La eleccion es para Consulta Popular pero el voto no es a plesbicito''. y como resultado:
+		
+\begin{tabular}{| l| l| l| l| }
+	\hline 
+	   & idVoto & idMesa & Tipo \\
+	   \hline
+	 &  &  &  \\
+ 	 \hline 
+	\end{tabular}
+	
+	\vspace{2mm}	
 	\end{itemize}
-
 \item \textbf{Eleccion a candidato:}  Si la eleccion es de tipo 'Cargo Federal', 'Cargo Municipal', Cargo Provincial' o tipo 'Cargo Legislativo', los votos cuya clave foranea referencia esa eleccion deben ser de tipo 'A Candidato', y deben referenciar a un candidato que este postulado a dicha eleccion
 
 	\begin{itemize}
@@ -81,7 +111,7 @@ referencia esa eleccion deben ser de tipo ' A Plesbiscito Si ' o ' A Plesbiscito
 	\end{lstlisting}
 			
 	\end{itemize}
-
+\end{enumerate}
 \subsubsection{Multiples Candidatos:} Un partido politico puede presentar a un solo candidato por eleccion. Para chequear esto, vamos a crear una eleccion de tipo 'Cargo Federal', un partido politico
 'Frente por la Derrota', y vamos a crear dos candidatos distintos y postularlos para la misma eleccion.
 	\begin{lstlisting}
@@ -109,7 +139,7 @@ referencia esa eleccion deben ser de tipo ' A Plesbiscito Si ' o ' A Plesbiscito
 \subsubsection{Validaciones de los votos}: Validaremos las restricciones: ''No permitir que la gente vote mas de una vez por eleccion'', ''El voto puede hacerse en la fecha de la eleccion de 8am a 6pm''. 
 	\begin{itemize}
 	\item 'Unico voto': Creamos una elección de tipo 'Consulta Popular', y hacemos que un ciudadano intente votar por segunda vez.
-	\begin{lstlisting}
+	\begin{lstlisting}s
 	SELECT IGNACIO UNBEKANT
 	\end{lstlisting}
 	
@@ -120,4 +150,7 @@ referencia esa eleccion deben ser de tipo ' A Plesbiscito Si ' o ' A Plesbiscito
 	
 	\end{itemize}					
 
-\end{enumerate}
+\subsubsection{Consultas del enunciado}:
+
+
+

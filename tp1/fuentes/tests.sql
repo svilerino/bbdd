@@ -1,0 +1,19 @@
+
+INSERT INTO Ciudadano VALUES
+ (1,'JUAN','VOTANTE'),
+ (2,'PEPE','PRESIDENTE'),
+ (3,'VICTOR','VICEPRESIDENTE'),
+ (4,'TOMAS','TECNICO');
+
+ INSERT INTO Centro VALUES
+ (1,'Escuela', '9 de julio 1');
+
+ INSERT INTO Maquina VALUES
+ (1,4)
+
+ INSERT INTO Mesa VALUES
+ (1,1,2,3,1,1,1)
+
+ SELECT * FROM Voto
+
+ 
