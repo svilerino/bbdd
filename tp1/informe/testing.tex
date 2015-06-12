@@ -509,14 +509,42 @@ Finalmente, hacemos votar a los ciudadanos. En la primera eleccion, haremos vota
 	\end{tabular}
 	\vspace{2mm}	
 
-Donde podemos ver que se refleja lo que queriamos. A continuacion ejecutamos la query, y esperamos que nos de como resultado 'CANDIDATO UNO' y 'CANDIDATO TRES'.
+Donde podemos ver que se refleja lo que queriamos. A continuacion ejecutamos la query:
+
+
+\begin{lstlisting}
+WITH WINNERS AS (
+	SELECT FechaEleccion, Candidato, CantVotos,
+	 ROW_NUMBER() over (
+	        PARTITION BY FechaEleccion
+	        ORDER BY CantVotos DESC
+	    ) AS NumFila
+	FROM Ranking_Elecciones_Cargo_Ultimo_Anio
+
+)
+SELECT FechaEleccion, Candidato, CantVotos FROM WINNERS WHERE NumFila <= 1--cantidad de items por grupo
+\end{lstlisting}
+
+
+ y esperamos que nos de como resultado 'CANDIDATO UNO' y 'CANDIDATO TRES'. Resultado:
+ 
+ \begin{tabular}{| l| l| l| }
+	\hline 
+	    fechaEleccion & Candidato & CantVotos \\
+	   \hline
+	  '2015-01-01' & CANDIDATOUNO & 10 \\
+ 	 \hline 
+ 	   '2015-06-12' & CANDIDATOTRES & 8 \\
+ 	 \hline 
+	\end{tabular}
+	
+	\vspace{2mm}	
 
 
 \item \textbf{Ultimas personas que fueron a votar por Centro}
 
 Por la forma en las que ejecutamos las Stored Procedures(votaron del 1 al 15 en orden en la primera, y luego del 1 al 15 en orden en la segunda), la query deberia devolvernos los ciudadanos desde el 11 al 15 para cada eleccion. Ejecutamos el codigo de la consulta:
 
-\begin{lstlisting}
 \begin{lstlisting}
 		WITH TOPFIVE AS (
 	    SELECT cen.Nombre_Establecimiento, (ciu.Nombre + ciu.Apellido) as Votante, p.selloVoto as HoraVoto,
