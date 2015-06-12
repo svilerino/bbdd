@@ -31,22 +31,22 @@ WHERE	(v.idMesa IN
 GROUP BY vc.DNI, ciu.Nombre, ciu.Apellido, elec.Fecha, elec.tipo
 ORDER BY FechaEleccion ASC, CantVotos DESC
 
-		\end{lstlisting}
+\end{lstlisting}
 		
-	Luego aplicamos una consulta sobre esta vista, que nos devuelve para cada eleccion de la vista, el (o los en caso de empate) ganador(es).
-	Creamos otra vista para acceder directamente a esta consulta pedida.
-		
-		\begin{lstlisting}
-			CREATE VIEW [dbo].[Ganadores_Elecciones_Cargo_Ultimo_Anio] AS
-			SELECT FechaEleccion, Candidato, MAX(CantVotos) as ganador_con_max_votos
-			FROM Ranking_Elecciones_Cargo_Ultimo_Anio
-			GROUP BY FechaEleccion, Candidato
-		\end{lstlisting}
+Luego nos quedamos con los que tienen mas votos de los agrupamientos por eleccion.
 
-		Finalmente, se accede a los datos pedidos ejecutando:
-		\begin{lstlisting}
-			SELECT * FROM dbo.[Ganadores_Elecciones_Cargo_Ultimo_Anio]
-		\end{lstlisting}
+\begin{lstlisting}
+WITH WINNERS AS (
+	SELECT FechaEleccion, Candidato, CantVotos,
+	 ROW_NUMBER() over (
+	        PARTITION BY FechaEleccion
+	        ORDER BY CantVotos DESC
+	    ) AS NumFila
+	FROM Ranking_Elecciones_Cargo_Ultimo_Anio
+
+)
+SELECT FechaEleccion, Candidato, CantVotos FROM WINNERS WHERE NumFila <= 1--cantidad de items por grupo
+\end{lstlisting}
 
 	\item Poder consultar las cinco personas que más tarde fueron a votar antes de terminar
 	la votación por cada centro electoral en una elección.
@@ -61,7 +61,7 @@ ORDER BY FechaEleccion ASC, CantVotos DESC
 	    FROM Padron p
 	    INNER JOIN Mesa m ON m.idMesa = p.idMesa
 	    INNER JOIN Centro cen ON cen.idCentro = m.idCentro
-	    INNER JOIN Ciudadano ciu ON ciu.DNI = p.DNI
+	    INNER JOIN Ciudadano ciu ON ciu.DNI = p.DNI)
 	    
 	SELECT Nombre_Establecimiento, Votante, HoraVoto FROM TOPFIVE WHERE NumFila <= 5--cantidad de items por grupo
 	\end{lstlisting}
