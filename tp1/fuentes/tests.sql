@@ -3,17 +3,45 @@ INSERT INTO Ciudadano VALUES
  (1,'JUAN','VOTANTE'),
  (2,'PEPE','PRESIDENTE'),
  (3,'VICTOR','VICEPRESIDENTE'),
- (4,'TOMAS','TECNICO');
+ (4,'TOMAS','TECNICO'),
+ (5,'CARLOS','CANDIDATO'),
+ (6,'IGNACIO','IMPOSTOR'),
+ (7,'TITO','TECNICODOS'),
+(8,'PEDRO','PRESIDENTEDOS'),
+(9,'VALENTIN','VICEPRESIDENTEDOS');
+
+
+  INSERT INTO Candidato VALUES
+ (5), (6);
+ 
 
  INSERT INTO Centro VALUES
  (1,'Escuela', '9 de julio 1');
-
- INSERT INTO Maquina VALUES
- (1,4)
-
- INSERT INTO Mesa VALUES
- (1,1,2,3,1,1,1)
-
- SELECT * FROM Voto
-
  
+ INSERT INTO Maquina VALUES
+ (1,4),
+ (2,7);
+	
+ INSERT INTO Mesa VALUES
+ (1,1,2,3,1,1,1),
+ (2,2,8,9,1,1,2);
+  
+  DELETE FROM Mesa 
+  WHERE idMesa=2
+  
+ INSERT INTO Provincia VALUES
+ (1,'BUENOS AIRES');
+
+INSERT INTO Partido_Politico VALUES
+(1,'FRENTE POR LA APROBACION'),
+(1,'UNIDOS POR LA UNION');
+
+
+INSERT INTO Postulaciones VALUES
+(1,5,1);
+(1,6,2);
+
+Insert INTO Padron VALUES
+(1,1,NULL)
+(1,2,NULL)
+

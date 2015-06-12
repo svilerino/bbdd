@@ -1,6 +1,6 @@
 \subsection{Codigo de testing de la solucion provista}
 
-En primera instancia, se realizaran pruebas de solidez y correctitud de las restricciones implementadas. Por último, tests de correctitud de las consultas requeridas por el enunciado.
+En primera instancia, se realizaran pruebas de solidez y correctitud de las restricciones implementadas. Por último, tests de correctitud de las consultas requeridas por el enunciado. El codigo de los tests de restricciones se encuentra en 'tests.sql'
 
 \subsubsection{Votos de una eleccion}
 
@@ -21,21 +21,20 @@ INSERT INTO Ciudadano VALUES
  (2,'PEPE','PRESIDENTE'),
  (3,'VICTOR','VICEPRESIDENTE'),
  (4,'TOMAS','TECNICO'),
- (5,'CARLOS', 'CANDIDATO');
-
+ 
  INSERT INTO Centro VALUES
  (1,'Escuela', '9 de julio 1');
 
  INSERT INTO Maquina VALUES
- (1,4)
+ (1,4);
 
  INSERT INTO Mesa VALUES
- (1,1,2,3,1,1,1)
+ (1,1,2,3,1,1,1);
 \end{lstlisting}
 
 	\begin{itemize}
-	\item 'A Plesbiscito Si': Insertar un voto 'A Plesbiscito Si' deberia realizarse correctamente.
-	Ejecutamos la Stored Procedure 'Votar\_ Consulta\_ Popular' con los parametros DNIdelVotante=1, idMesaDelVoto=1 y OpcionVoto=1. Acto seguido, ejecutamos:
+	\item 'A Plesbiscito Si': Insertar un voto 'A Plesbiscito Si' deberia realizarse correctamente. (En todos los casos, al terminar el test borramos el voto)
+	Ejecutamos la Stored Procedure 'Votar\_ Consulta\_ Popular' con los parametros DNIdelVotante=1, idEleccion=1 y OpcionVoto=1. Acto seguido, ejecutamos:
 	\begin{lstlisting}
 	SELECT * FROM Voto
 	\end{lstlisting}
@@ -51,7 +50,7 @@ INSERT INTO Ciudadano VALUES
 	\end{tabular}
 	
 	\vspace{2mm}
-	\item 'A Plesbiscito No': Insertamos un voto de tipo 'A Plesbiscito No', lo cual deberia ejecutarse correctamente, usando la Stored Procedure 'Votar\_ Consulta\_ Popular' con los parametros DNIdelVotante=1, idMesaDelVoto=1 y OpcionVoto=0. Resultado:
+	\item 'A Plesbiscito No': Insertamos un voto de tipo 'A Plesbiscito No', lo cual deberia ejecutarse correctamente, usando la Stored Procedure 'Votar\_ Consulta\_ Popular' con los parametros DNIdelVotante=1, idEleccion=1 y OpcionVoto=0. Resultado:
 	
 	\begin{tabular}{| l| l| l| l| }
 	\hline 
@@ -63,7 +62,7 @@ INSERT INTO Ciudadano VALUES
 	
 	\vspace{2mm}	
 	
-	\item 'Voto de tipo invalido': Insertamos un voto de tipo 'A Plesbiscito No', lo cual NO deberia ejecutarse correctamente, usando la Stored Procedure 'Votar\_ Consulta\_ Popular' con los parametros DNIdelVotante=1, idMesaDelVoto=1 y OpcionVoto=3 (Esto representa un tipo de voto invalido). Resultado:
+	\item 'Voto de tipo invalido': Insertamos un voto de tipo invalido, lo cual NO deberia ejecutarse correctamente, usando la Stored Procedure 'Votar\_ Consulta\_ Popular' con los parametros DNIdelVotante=1, idEleccion=1 y OpcionVoto=3 (Esto representa un tipo de voto invalido). Resultado:
 	
 \begin{tabular}{| l| l| l| l| }
 	\hline 
@@ -76,7 +75,7 @@ INSERT INTO Ciudadano VALUES
 	\vspace{2mm}	
 		
 	
-	\item 'Voto a un candidato': Insertamos un voto 'A Candidato' lo cual NO deberia ejecutarse correctamente, usando la Stored Procedure 'Votar\_ Candidato' sobre la Consulta Popular, con los parametros DNIdelVotante=1, idMesaDelVoto=1 y DniCandidato=5. Inmediatamente recibimos el aviso:
+	\item 'Voto a un candidato': Insertamos un voto 'A Candidato' lo cual NO deberia ejecutarse correctamente, usando la Stored Procedure 'Votar\_ Candidato' sobre la Consulta Popular, con los parametros DNIdelVotante=1, idEleccion=1 y DniCandidato=5. Inmediatamente recibimos el aviso:
 	''La eleccion es para Consulta Popular pero el voto no es a plesbicito''. y como resultado:
 		
 \begin{tabular}{| l| l| l| l| }
@@ -89,68 +88,477 @@ INSERT INTO Ciudadano VALUES
 	
 	\vspace{2mm}	
 	\end{itemize}
-\item \textbf{Eleccion a candidato:}  Si la eleccion es de tipo 'Cargo Federal', 'Cargo Municipal', Cargo Provincial' o tipo 'Cargo Legislativo', los votos cuya clave foranea referencia esa eleccion deben ser de tipo 'A Candidato', y deben referenciar a un candidato que este postulado a dicha eleccion
+\item \textbf{Eleccion a candidato:}  Si la eleccion es de tipo 'Cargo Federal', 'Cargo Municipal', Cargo Provincial' o tipo 'Cargo Legislativo', los votos cuya clave foranea referencia esa eleccion deben ser de tipo 'A Candidato', y deben referenciar a un candidato que este postulado a dicha eleccion. Vamos a crear una eleccion provincial, debemos crear una provincia, un partido, y postular a 'CARLOS CANDIDATO' a la eleccion.
+\begin{lstlisting}
+	 INSERT INTO Ciudadano VALUES
+	(5,'CARLOS', 'CANDIDATO');
+ 
+  	INSERT INTO Candidato VALUES
+ 	(5);
 
-	\begin{itemize}
-	\item 'Candidato Valido': Creamos una elección de tipo 'Cargo Federal', e insertamos un voto
-	de tipo 'A candidato', cuya clave foranea a candidato referencia a un candidato cuyo DNI se encuentra en la tabla postulaciones para esa eleccion.
-	\begin{lstlisting}
-	SELECT ESTA BIEN
+	INSERT INTO Provincia VALUES
+ 	(1,'BUENOS AIRES');
+ 	 
+ 	INSERT INTO Partido_Politico VALUES
+	(1,'FRENTE POR LA APROBACION');
+	
+	INSERT INTO Postulaciones VALUES
+	(1,5,1)
 	\end{lstlisting}
 	
-	\item 'Candidato No Valido': Creamos una elección de tipo 'Cargo Provincial', e insertamos un voto
-	de tipo 'A candidato', cuya clave foranea a candidato NO referencia a un candidato cuyo DNI se encuentra en la tabla postulaciones para esa eleccion.
+Eliminamos la anterior eleccion, de forma de poder usar la misma mesa y sus encargados, y usamos la Stored Procedure 'Crear\_ Eleccion\_ Provincial', con los parametros idProvincia=1 y fecha='2015-06-10'.
+
+	\begin{itemize}
+	\item 'Candidato Valido': Insertamos un voto de tipo 'A candidato', cuya clave foranea a candidato referencia a un candidato cuyo DNI se encuentra en la tabla postulaciones para esa eleccion, lo cual deberia ejecutarse sin problemas. Usamos la Stored Procedure: 'Votar\_ Candidato' con los parametros: DNIVotante=1, idEleccion=1, DNICandidato=5.Si ejecutamos:
 	\begin{lstlisting}
-	SELECT WILLIE
+	SELECT * FROM Voto
 	\end{lstlisting}
+	
+	Obtenemos:
+	
+	\begin{tabular}{| l| l| l| l| }
+	\hline 
+	   & idVoto & idMesa & Tipo \\
+	   \hline
+	 1 & 1 & 1 & A Candidato \\
+ 	 \hline 
+	\end{tabular}
+	\vspace{2mm}	
+	
+	Y si ejecutamos: 
+	
+	\begin{lstlisting}
+	SELECT * FROM Voto_A_Candidato
+	\end{lstlisting}
+	
+	Obtenemos:
+	
+	\begin{tabular}{| l| l|}
+	\hline 
+	   idVoto & DNI \\
+	   \hline
+	 1 & 5  \\
+ 	 \hline 
+	\end{tabular}
+	\vspace{2mm}
+	
+	\item 'Candidato Invalido': e insertamos un voto de tipo 'A candidato', cuya clave foranea a candidato NO referencia a un candidato cuyo DNI se encuentra en la tabla postulaciones para esa eleccion. Esto no deberia ser aceptable. Para esto creamos otro ciudadano:
+	\begin{lstlisting}
+	 INSERT INTO Ciudadano VALUES
+ 	(6,'IGNACIO','IMPOSTOR');
+	\end{lstlisting}
+	
+	Usamos la Stored Procedure: 'Votar\_ Candidato' con los parametros: DNIVotante=1, idEleccion=1, DNICandidato=6. Obtenemos un aviso: 'Instrucción INSERT en conflicto con la restricción FOREIGN KEY "FK\_Voto\_ A\_ Candidato\_ Candidato'. Y los resultados de consultar la tabla Voto y la tabla Voto\_ A\_ Candidato son:
+	
+	
+	\begin{tabular}{| l| l| l| l| }
+	\hline 
+	   & idVoto & idMesa & Tipo \\
+	  \hline 
+	   & & & \\
+	   \hline 
+	\end{tabular}
+	\vspace{2mm}	
+	
+	
+	\begin{tabular}{| l| l|}
+	\hline 
+	idVoto & DNI \\
+	\hline 
+	 & \\
+	\hline 
+	\end{tabular}
 		
-	\item 'Voto a plesbiscito': Creamos una elección de tipo 'Cargo Provincial', e insertamos un voto
-	de tipo 'A plesbiscito Si'.
-	\begin{lstlisting}
-	SELECT SAPE
-	\end{lstlisting}
+	\item 'Voto a plesbiscito': Insertamos un voto
+	de tipo 'A plesbiscito Si', lo cual no deberia ejecutarse. Ejecutamos la Stored Procedure 'Votar\_ Consulta\_ Popular' con los parametros DNIdelVotante=1, idEleccion=1 y OpcionVoto=1. Obtenemos el aviso: ''La eleccion es para Cargo pero el voto no es a candidato'', y como resultados:
+	
+	\begin{tabular}{| l| l| l| l| }
+	\hline 
+	   & idVoto & idMesa & Tipo \\
+	  \hline 
+	   & & & \\
+	   \hline 
+	\end{tabular}
+	\vspace{2mm}	
+	
+	
+	\begin{tabular}{| l| l|}
+	\hline 
+	idVoto & DNI \\
+	\hline 
+	 & \\
+	\hline 
+	\end{tabular}
 			
 	\end{itemize}
 \end{enumerate}
-\subsubsection{Multiples Candidatos:} Un partido politico puede presentar a un solo candidato por eleccion. Para chequear esto, vamos a crear una eleccion de tipo 'Cargo Federal', un partido politico
-'Frente por la Derrota', y vamos a crear dos candidatos distintos y postularlos para la misma eleccion.
-	\begin{lstlisting}
-	SELECT CAMPORA
-	\end{lstlisting}
-			
+\subsubsection{Multiples Candidatos:} Un partido politico puede presentar a un solo candidato por eleccion. Para chequear esto, vamos a intentar postular a ambos 'CARLOS CANDIDATO' e 'IGNACIO IMPOSTOR' al partido 'Frente por la Aprobacion'. No deberia ejecutarse. Al ejecutar esto, obtenemos el aviso: ''Infracción de la restricción UNIQUE KEY 'Unique\_ Key\_ Eleccion\_ Partido''. Si consultamos la tabla postulaciones, nos devuelve:
+\vspace{2mm}
+	
+	\begin{tabular}{| l| l| l|}
+	\hline 
+	idEleccion & DNI & idPartido \\
+	\hline 
+	 1 & 5 & 1 \\
+	\hline 
+	\end{tabular}
+\vspace{2mm}
+Con lo que efectivamente, no se inserto el segundo candidato.
 
-\subsubsection{Multiples Mesas para un ciudadano:} Un partido politico puede presentar a un solo candidato por eleccion. Para chequear esto, vamos a crear una eleccion de tipo 'Cargo Federal', un partido politico
-'Frente por la Derrota', y vamos a crear dos candidatos distintos y postularlos para la misma eleccion.
+\subsubsection{Multiples Mesas para un ciudadano:} Un ciudadano solo vota en una mesa por eleccion. Para comprobar eso creamos otro presidente, vicepresidente, tecnico y maquina para poder crear otra mesa, e intentamos asignar en el Padron a 'PEPE VOTANTE' ambas mesas.
 	\begin{lstlisting}
-	SELECT UCR
+	INSERT INTO Ciudadano VALUES
+	(7,'TITO','TECNICODOS'),
+	(8,'PEDRO','PRESIDENTEDOS'),
+	(9,'VALENTIN','VICEPRESIDENTEDOS');
+	
+	INSERT INTO Maquina VALUES
+ 	(2,7);
+ 	
+ 	 INSERT INTO Mesa VALUES
+ 	(2,2,8,9,1,1,2)
+ 
 	\end{lstlisting}
-			
-
-\subsubsection{Multiples Mesas para una  maquina:} Un ciudadano vota en una sola mesa por eleccion. Para chequear esto creamos una eleccion de tipo 'Consulta Popular', un ciudadano, dos mesas para esa eleccion, y asignamos al ciudadano en ambas mesas.
+	\vspace{2mm}		
+	Y finalmente, asignamos al ciudadano a ambas mesas
+	\vspace{2mm}
 	\begin{lstlisting}
-	SELECT PRO
-	\end{lstlisting}
-								
-\subsubsection{Multiples Mesas para una maquina}:Una maquina funciona en una sola mesa por eleccion. Para chequear esto creamos una eleccion de tipo 'Consulta Popular', una maquina, dos mesas para esa eleccion, y asignamos a la maquina en ambas mesas.
-	\begin{lstlisting}
-	SELECT EL NENE
+	Insert INTO Padron VALUES
+	(1,1,NULL)
+	(1,2,NULL)
 	\end{lstlisting}
 	
+	\vspace{2mm}
+	
+	A lo que recibimos el aviso: ''Ya existe una mesa en la cual esta persona vota en esta eleccion''. Y si consultamos el padron, obtenemos:
+	
+	\vspace{2mm}
+	
+	\begin{tabular}{| l| l| l|}
+	\hline 
+	DNI & idMesa & selloVoto \\
+	\hline 
+	 1 & 1 & NULL \\
+	\hline 
+	\end{tabular}
+	\vspace{2mm}
+	
+	Efectivamente solo se asigno la primera vez.
+	
+\subsubsection{Multiples Mesas para una  maquina:} Una maquina solo funciona en una mesa por eleccion. Para esto eliminamos la segunda mesa que creamos en el test anterior, y la vamos a crear de nuevo pero asignandole la misma maquina 1.
+	\begin{lstlisting}
+	 DELETE FROM Mesa 
+ 	 WHERE idMesa=2
+ 	 
+ 	 
+ INSERT INTO Mesa VALUES
+ 	  (2,2,8,9,1,1,1);
+	\end{lstlisting}
+			\vspace{2mm}				
+Obtenemos el aviso: ''Ya existe una mesa en esta eleccion con esta maquina'', y si consultamos la tabla Mesa vemos que efectivamente no se agrego la segunda:
+			\vspace{2mm}	
+			
+	\begin{tabular}{| l| l| l| l| l| l| l|}
+	\hline 
+	idMesa & nroMesa & idPresidente & idVicePresidente & idEleccion & idCentro & idMaquina \\
+	\hline 
+	 1 & 1 & 2 & 3 & 1 & 1 & 1 \\
+	\hline 
+	\end{tabular}
+	
+	\vspace{2mm}	
+			
 \subsubsection{Validaciones de los votos}: Validaremos las restricciones: ''No permitir que la gente vote mas de una vez por eleccion'', ''El voto puede hacerse en la fecha de la eleccion de 8am a 6pm''. 
 	\begin{itemize}
-	\item 'Unico voto': Creamos una elección de tipo 'Consulta Popular', y hacemos que un ciudadano intente votar por segunda vez.
-	\begin{lstlisting}s
-	SELECT IGNACIO UNBEKANT
-	\end{lstlisting}
-	
-	\item 'Hora valida': Creamos una elección de tipo 'Consulta Popular', y hacemos que un ciudadano 		intente votar en un horario invalido.
+	\item 'Unico voto': Creamos un partido politico para el Candidato 'IGNACIO IMPOSTOR' y lo postulamos
+
 	\begin{lstlisting}
-	SELECT SAPE
-	\end{lstlisting}	
+	INSERT INTO Partido_Politico VALUES
+	(2,'UNIDOS POR LA UNION');
+	
+	
+	INSERT INTO Postulaciones VALUES
+	(1,5,1);
+	(1,6,2);
+	\end{lstlisting}
+
+ Usamos dos veces consecutivas la Stored Procedure: 'Votar\_ Candidato' con los parametros: DNIVotante=1, idEleccion=1, DNICandidato=5 en la primera vez, y en la segunda vez: DNIVotante=1, idEleccion=1, DNICandidato=6. Obtenemos el aviso: 'Esta persona ya voto en esta eleccion', y como resultado:
+ 
+ 	\vspace{2mm}	
+ 	
+ \begin{tabular}{| l| l| l| l| }
+	\hline 
+	   & idVoto & idMesa & Tipo \\
+	  \hline 
+	   &1 &1 & aCandidato \\
+	   \hline 
+	\end{tabular}
+	\vspace{2mm}	
+	
+		\vspace{2mm}
+			
+	\begin{tabular}{| l| l|}
+	\hline 
+	idVoto & DNI \\
+	\hline 
+	  1 & 5 \\
+	\hline 
+	\end{tabular}
+	
+		\vspace{2mm}	
+		Donde vemos que solo se inserto el primer voto.
+		
+	\item 'Hora valida': Creamos una elección de tipo 'Consulta Popular', y hacemos que un ciudadano intente votar en un horario invalido (cambiamos la hora de la computadora a las 19:00hs). Recibimos el aviso:Estamos fuera de horario de votacion, y no se modificaron las tablas de votos.
+
 	
 	\end{itemize}					
 
 \subsubsection{Consultas del enunciado}:
 
+Insertamos los siguientes datos en la base para poder realizar los tests: 15 ciudadanos, que seran los votantes, dos presidentes, vicepresidentes y tecnicos de mesa, dos candidatos, dos conductores(a estos ultimos, no los hacemos votar, solo hacemos votar a los ciudadanos para que sea mas entendible), dos centros, dos camiones, una provincia y dos partidos. Este codigo se encuentra en el archivo 'testQueries.sql'
+
+\begin{lstlisting}
+INSERT INTO Ciudadano VALUES
+(1,'CIUDADANO','UNO'),
+(2,'CIUDADANO','DOS'),
+(3,'CIUDADANO','TRES'),
+(4,'CIUDADANO','CUATRO'),
+(5,'CIUDADANO','CINCO'),
+(6,'CIUDADANO','SEIS'),
+(7,'CIUDADANO','SIETE'),
+(8,'CIUDADANO','OCHO'),
+(9,'CIUDADANO','NUEVE'),
+(10,'CIUDADANO','DIEZ'),
+(11,'CIUDADANO','ONCE'),
+(12,'CIUDADANO','DOCE'),
+(13,'CIUDADANO','TRECE'),
+(14,'CIUDADANO','CATORCE'),
+(15,'CIUDADANO','QUINCE'),
+(16,'PRESIDENTEMESA','UNO'),
+(17,'PRESIDENTEMESA','DOS'),
+(18,'VICEPRESIDENTEMESA','UNO'),
+(19,'VICEPRESIDENTEMESA','DOS'),
+(20,'TECNICO','UNO'),
+(21,'TECNICO','DOS'),
+(22,'CANDIDATO','UNO'),
+(23,'CANDIDATO','DOS'),
+(24,'CANDIDATO','TRES'),
+(25,'CANDIDATO','CUATRO'),
+(26,'CONDUCTOR','UNO'),
+(27,'CONDUCTOR','DOS');
+
+INSERT INTO Centro VALUES
+(1,'ESCUELA','UNO'),
+(2,'ESCUELA2','DOS');
+
+INSERT INTO Camion VALUES
+(1,26),
+(2,27);
+
+INSERT INTO Camion_Centro VALUES
+(1,1),
+(2,2);
+
+INSERT INTO Maquina VALUES
+(1,20),
+(2,21);
+
+INSERT INTO Candidato VALUES
+(22), (23), (24), (25);
+
+INSERT INTO Provincia VALUES
+(1,'BUENOS AIRES');
+
+INSERT INTO Partido_Politico VALUES
+(1,'PARTIDO DE IZQUIERDA'),
+(2,'PARTIDO DE DERECHA');
 
 
+\end{lstlisting}
+
+\begin{itemize}
+\item \textbf{Ganadores de elecciones del ultimo año}
+A continuacion creamos dos elecciones, una federal y una provincial. Cambiamos el reloj de la computadora al 1 de enero de 2015 para crear la federal, para poder estar la correctitud del calculo del año corriente, y la provincial se efectua el 12/06/2015. Usamos la Stored Procedure para crear la provincial, y el siguiente codigo para crear la federal:
+
+\begin{lstlisting}
+INSERT INTO Eleccion VALUES
+(1,GETDATE(),'Cargo Federal');
+\end{lstlisting}
+
+
+A continuacion creamos dos mesas, una en cada centro y para cada eleccion. Acto seguido, postulamos a los primeros dos candidatos a la eleccion del 1ero de enero, uno por el partido de izquierda, el otro por el de derecha. Hacemos lo mismo con el tercer y cuarto candidato, en la eleccion del 12 de junio.
+
+\begin{lstlisting}
+INSERT INTO Mesa VALUES
+(1,1,16,18,1,1,1);
+
+INSERT INTO Mesa VALUES
+(2,2,17,19,2,2,2);
+
+INSERT INTO Postulaciones VALUES
+(1,22,1),
+(1,23,2),
+(2,24,1),
+(2,25,2);
+\end{lstlisting}
+
+Finalmente, armamos el padron y asignamos a los 15 ciudadanos, la mesa 1 para la primera eleccion y la mesa 2 para la segunda eleccion.
+
+\begin{lstlisting}
+INSERT INTO Padron VALUES
+(1,1,NULL),
+(2,1,NULL),
+(3,1,NULL),
+(4,1,NULL),
+(5,1,NULL),
+(6,1,NULL),
+(7,1,NULL),
+(8,1,NULL),
+(9,1,NULL),
+(10,1,NULL),
+(11,1,NULL),
+(12,1,NULL),
+(13,1,NULL),
+(14,1,NULL),
+(15,1,NULL),
+(1,2,NULL),
+(2,2,NULL),
+(3,2,NULL),
+(4,2,NULL),
+(5,2,NULL),
+(6,2,NULL),
+(7,2,NULL),
+(8,2,NULL),
+(9,2,NULL),
+(10,2,NULL),
+(11,2,NULL),
+(12,2,NULL),
+(13,2,NULL),
+(14,2,NULL),
+(15,2,NULL);
+\end{lstlisting}
+
+Finalmente, hacemos votar a los ciudadanos. En la primera eleccion, haremos votar 10 al 'CANDIDATO UNO' y los restantes 5 al 'CANDIDATO DOS'. En la segunda eleccion, haremos votar 8 al 'CANDIDATO TRES' y 7 al 'CANDIDATO CUATRO. Hacemos uso de las debidas Stored Procedures. Si consultamos la tabla 'Voto\_ A \_ Candidato':
+
+\vspace{2mm}	
+ 	
+ \begin{tabular}{| l| l|}
+	\hline 
+	    idVoto & DNI \\
+	  \hline 
+	   1 &22  \\
+	   \hline 
+	   2 &22  \\
+	   \hline 
+	   3 &22  \\
+	   \hline 
+	   4 &22  \\
+	   \hline 
+	   5 &22  \\
+	   \hline 
+	   6 &22  \\
+	   \hline 
+	   7 &22  \\
+	   \hline 
+	   8 &22  \\
+	   \hline 
+	   9 &22  \\
+	   \hline 
+	   10 &22  \\
+	   \hline 
+	   11 &23  \\
+	   \hline 
+	   12 &23  \\
+	   \hline 
+	   13 &23  \\
+	    \hline 
+	   14 &23  \\
+	   \hline 
+	   15 &23  \\
+	   \hline 
+	   16 &24  \\
+	   \hline 
+	   17 &24  \\
+	   \hline 
+	   18 &24  \\
+	   \hline 
+	   19 &24  \\	 
+	     \hline 
+	   20 &24  \\	 
+	     \hline 
+	   21 &24  \\
+	   \hline 
+	   22 &24  \\	
+	      \hline 
+	   23 &24  \\	 
+	     \hline 
+	   24 &25  \\
+	   \hline 
+	   25 &25  \\	  
+	    \hline 
+	   26 &25  \\	  
+	    \hline 
+	   27 &25  \\	  
+	    \hline 
+	   28 &25  \\	 
+	     \hline 
+	   29 &25  \\	 
+	     \hline 
+	   30 &25  \\
+	   \hline 
+	\end{tabular}
+	\vspace{2mm}	
+
+Donde podemos ver que se refleja lo que queriamos. A continuacion ejecutamos la query, y esperamos que nos de como resultado 'CANDIDATO UNO' y 'CANDIDATO TRES'.
+
+
+\item \textbf{Ultimas personas que fueron a votar por Centro}
+
+Por la forma en las que ejecutamos las Stored Procedures(votaron del 1 al 15 en orden en la primera, y luego del 1 al 15 en orden en la segunda), la query deberia devolvernos los ciudadanos desde el 11 al 15 para cada eleccion. Ejecutamos el codigo de la consulta:
+
+\begin{lstlisting}
+\begin{lstlisting}
+		WITH TOPFIVE AS (
+	    SELECT cen.Nombre_Establecimiento, (ciu.Nombre + ciu.Apellido) as Votante, p.selloVoto as HoraVoto,
+	    ROW_NUMBER() over (
+	        PARTITION BY cen.idCentro
+	        ORDER BY p.selloVoto DESC
+	    ) AS NumFila
+	    FROM Padron p
+	    INNER JOIN Mesa m ON m.idMesa = p.idMesa
+	    INNER JOIN Centro cen ON cen.idCentro = m.idCentro
+	    INNER JOIN Ciudadano ciu ON ciu.DNI = p.DNI
+	    
+	SELECT Nombre_Establecimiento, Votante, HoraVoto FROM TOPFIVE WHERE NumFila <= 5--cantidad de items por grupo
+	\end{lstlisting}
+
+Y la consulta nos da como resultado:
+
+
+ \begin{tabular}{| l| l| l|}
+	\hline 
+	    Nombre\_ Establecimiento & Votante & HoraVoto \\
+	  \hline 
+	   ESCUELA &CIUDADANOQUINCE & 2015-01-01 15:31:45.777 \\
+	   \hline 
+	   ESCUELA &CIUDADANOCATORCE & 2015-01-01 15:31:39.827 \\
+	   \hline 
+	   ESCUELA &CIUDADANOTRECE & 2015-01-01 15:31:33.407 \\
+	   \hline 
+	  ESCUELA  & CIUDADANODOCE & 2015-01-01 15:31:19.793\\
+	   \hline 
+	   ESCUELA  & CIUDADANOONCE & 2015-01-01 15:30:54.793\\
+	   \hline 
+	   ESCUELA2 &CIUDADANOQUINCE & 2015-06-12 15:34:20.013 \\
+	   \hline 
+	   ESCUELA2 &CIUDADANOCATORCE & 2015-06-12 15:34:15.037 \\
+	   \hline 
+	   ESCUELA2  & CIUDADANOTRECE &2015-06-12 15:34:11.063 \\
+	   \hline 
+	   ESCUELA2  & CIUDADANODOCE &2015-06-12 15:34:05.987 \\
+	   \hline 
+	   ESCUELA2  & CIUDADANOONCE &2015-06-12 15:34:02.407 \\
+	   \hline 
+	\end{tabular}
+
+\end{itemize}
