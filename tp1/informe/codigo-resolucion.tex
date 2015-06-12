@@ -61,7 +61,7 @@ ORDER BY FechaEleccion ASC, CantVotos DESC
 	    FROM Padron p
 	    INNER JOIN Mesa m ON m.idMesa = p.idMesa
 	    INNER JOIN Centro cen ON cen.idCentro = m.idCentro
-	    INNER JOIN Ciudadano ciu ON ciu.DNI = p.DNI
+	    INNER JOIN Ciudadano ciu ON ciu.DNI = p.DNI)
 	    
 	SELECT Nombre_Establecimiento, Votante, HoraVoto FROM TOPFIVE WHERE NumFila <= 5--cantidad de items por grupo
 	\end{lstlisting}
