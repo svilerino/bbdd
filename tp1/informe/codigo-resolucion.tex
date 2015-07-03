@@ -73,11 +73,11 @@ SELECT FechaEleccion, Candidato, CantVotos FROM WINNERS WHERE NumFila <= 1--cant
 Creamos una vista que nos devuelve el ranking de las ultimas 5 elecciones a gobernador, y ademas la cantidad de votos por cada eleccion.
 
 \begin{lstlisting}
-	SELECT elec.Fecha AS FechaEleccion, ciu.Nombre + ciu.Apellido AS Candidato, partPolitico.Nombre as PartidoPolitico, 
+	SELECT elec.idEleccion, elec.Fecha AS FechaEleccion, ciu.Nombre + ciu.Apellido AS Candidato, partPolitico.Nombre as PartidoPolitico, 
 COUNT(vc.idVoto) AS CantVotos,  
 
-COUNT(*) over (
-	        PARTITION BY elec.fecha
+SUM(COUNT(vc.idVoto)) over (
+	        PARTITION BY elec.idEleccion
 	    ) AS Cant_Total_Votos_Por_Eleccion  
 
 FROM         dbo.Voto AS v 
@@ -96,7 +96,7 @@ WHERE     (v.idMesa IN
 		                                    dbo.Eleccion_Cargo_Provincial AS ecp ON ecp.idEleccion = e.idEleccion
 		             WHERE      (e.tipo = 'Cargo Provincial') AND (YEAR(e.Fecha) = YEAR(GETDATE()))
 		             ORDER BY e.Fecha DESC))))
-GROUP BY vc.DNI, partPolitico.Nombre, ciu.Nombre, ciu.Apellido, elec.Fecha
+GROUP BY vc.DNI, partPolitico.Nombre, ciu.Nombre, ciu.Apellido, elec.Fecha, elec.idEleccion
 \end{lstlisting}
 
 Creamos otra vista que sobre la vista anterior, calcula el porcentaje de votos de cada partido y lo filtra por quienes tienen mas de 20\%.
