@@ -627,7 +627,7 @@ EXEC	[dbo].[Votar_Candidato]
 		@DNICandidato = 48
 
 -- ELECCION 6: CANDIDATO ONCE (FRENTE POR LA APROBACION) VS  CANDIDATO DOCE (UNIDOS POR LA UNION)
--- Candidato 50 tiene 10 votos, candidato 51 tiene 5
+-- Candidato 50 tiene 15 votos, candidato 51 tiene 0
 
 EXEC	[dbo].[Votar_Candidato]
 		@DNIVotante = 1,
@@ -683,24 +683,24 @@ EXEC	[dbo].[Votar_Candidato]
 EXEC	[dbo].[Votar_Candidato]
 		@DNIVotante = 11,
 		@idEleccion = 6,
-		@DNICandidato = 51
+		@DNICandidato = 50
 
 EXEC	[dbo].[Votar_Candidato]
 		@DNIVotante = 12,
 		@idEleccion = 6,
-		@DNICandidato = 51
+		@DNICandidato = 50
 
 EXEC	[dbo].[Votar_Candidato]
 		@DNIVotante = 13,
 		@idEleccion = 6,
-		@DNICandidato = 51
+		@DNICandidato = 50
 
 EXEC	[dbo].[Votar_Candidato]
 		@DNIVotante = 14,
 		@idEleccion = 6,
-		@DNICandidato = 51
+		@DNICandidato = 50
 
 EXEC	[dbo].[Votar_Candidato]
 		@DNIVotante = 15,
 		@idEleccion = 6,
-		@DNICandidato = 51
+		@DNICandidato = 50

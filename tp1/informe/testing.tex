@@ -315,7 +315,7 @@ Obtenemos el aviso: ''Ya existe una mesa en esta eleccion con esta maquina'', y 
 
 \subsubsection{Consultas del enunciado}:
 
-Insertamos los siguientes datos en la base para poder realizar los tests: 15 ciudadanos, que seran los votantes, dos presidentes, vicepresidentes y tecnicos de mesa, dos candidatos, dos conductores(a estos ultimos, no los hacemos votar, solo hacemos votar a los ciudadanos para que sea mas entendible), dos centros, dos camiones, una provincia y dos partidos. Este codigo se encuentra en el archivo 'testQueries.sql'
+Insertamos los siguientes datos en la base para poder realizar los dos primeros tests: 15 ciudadanos, que seran los votantes, dos presidentes, vicepresidentes y tecnicos de mesa, dos candidatos, dos conductores(a estos ultimos, no los hacemos votar, solo hacemos votar a los ciudadanos para que sea mas entendible), dos centros, dos camiones, una provincia y dos partidos. Este codigo se encuentra en el archivo 'testQueries.sql'
 
 \begin{lstlisting}
 INSERT INTO Ciudadano VALUES
@@ -588,5 +588,48 @@ Y la consulta nos da como resultado:
 	   ESCUELA2  & CIUDADANOONCE &2015-06-12 15:34:02.407 \\
 	   \hline 
 	\end{tabular}
+
+\item \textbf{Partidos pol\'i ticos con mas del 20\% en las ultimas 5 elecciones}
+
+Para este test, insertamos un conjunto de datos mas extenso, que se encuentra en el archivo 'TESTCONSULTATRES.sql'. En resumen, se crearon 6 elecciones a gobernador, 12 mesas (2 por eleccion), 12 candidatos (2 por eleccion) y 5 partidos, y se completaron las demas tablas para que todo esto funcione (maquina, tecnico, etc.) Acto seguido, se ejecuto la Stored Procedure de voto de esta forma:
+
+\begin{enumerate}
+	\item \textbf{Eleccion 1:} Candidato uno (Partido de izquierda):10 votos (66\%). Candidato dos (Partido de derecha): 5 votos (33\%). 
+	\item \textbf{Eleccion 2:} Candidato tres (Partido de izquierda):10 votos (66\%). Candidato cuatro (Partido de derecha): 5 votos (33\%).
+	\item \textbf{Eleccion 3:} Candidato cinco (Partido de izquierda):10 votos (66\%). Candidato seis (partido de centro): 5 votos (33\%).
+-- Candidato 44 tiene 10 votos, candidato 45 tiene 5
+	\item \textbf{Eleccion 4:} Candidato siete (Partido de izquierda):10 votos (66\%). Candidato ocho (Frente por la aprobacion): 5 votos (33\%).
+	\item \textbf{Eleccion 5:} Candidato nueve(Frente por la aprobacion): 15 votos (100\%). Candidato diez (Unidos por la Union): 0 votos (0\%).
+	\item \textbf{Eleccion 6:} Candidato once(Frente por la aprobacion): 15 votos (100\%). Candidato doce (Unidos por la Union): 0 votos (0\%).
+
+\end{enumerate}
+
+Esperamos que la query ignore la primera eleccion (ya que se consideran las ultimas 5 elecciones), y que aparezcan en ella el Partido de Izquierda, el Partido de Derecha, el Partido de Centro y el Frente por la Aprobacion. El partido Unidos por la Union no deberia formar parte del resultado, ya que saco menos del 20\% en todas sus elecciones. Ejecutamos la query y obtenemos como resultado:
+
+
+
+ \begin{tabular}{| l| l| l|}
+	\hline 
+	    FechaEleccion & PartidoPolitico & Porcentaje \\
+	  \hline 
+	   2015-07-02 &PARTIDO DE IZQUIERDA & 66 \\
+	   \hline 
+	   2015-07-02 &PARTIDO DE DERECHA  & 33 \\
+	   \hline 
+	   2015-07-03 &PARTIDO DE IZQUIERDA  & 66 \\
+	   \hline 
+	  2015-07-03  & PARTIDO DE CENTRO  & 33\\
+	   \hline 
+	   2015-07-04  & PARTIDO DE IZQUIERDA  & 66\\
+	   \hline 
+	   2015-07-04 &FRENTE POR LA APROBACION & 33 \\
+	   \hline 
+	   2015-07-05 &FRENTE POR LA APROBACION & 100 \\
+	   \hline 
+	   2015-07-06  & FRENTE POR LA APROBACION &100 \\
+	   \hline 
+	\end{tabular}
+
+Efectivamente, devuelve lo esperado.
 
 \end{itemize}
